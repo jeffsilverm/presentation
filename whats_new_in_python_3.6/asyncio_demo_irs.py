@@ -27,7 +27,7 @@ async def main(urls):
 
     coroutines = [download_coroutine(url) for url in urls]  # type: List[Any]
     print("Preparing to call asyncio.wait")
-    completed, pending = await asyncio.wait(coroutines) # type: Tuple[]
+    completed, pending = await asyncio.wait(coroutines) # type: Tuple[Any, Any]
     print("asyncio.wait returned")
     for item in completed:
         print(item.result())
