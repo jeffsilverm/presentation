@@ -5,12 +5,16 @@
 #
 # This version uses comments to annotate types, and will work (and fail) until python 2.7 as well as python 3.6
 # http://mypy.readthedocs.io/en/latest/python2.html
-import typing
-from typing import Dict
+# Description: type hinting, hints in comments, python2
+
+import __future__
+import sys
+
+print("Running python version %s.%s.%s" % ( sys.version_info.major, sys.version_info.minor, sys.version_info.micro ) )
 
 
 def get_first_name(full_name) :
-    # Type: -> str
+    # Type: ( str ) -> str
     return full_name.split(" ")[0]
 
 fallback_name = {
@@ -18,7 +22,7 @@ fallback_name = {
     "last_name": "UserLastName"
 }   # Type: Dict
 
-raw_name = input("Please enter your name: ")    # Type: str
+raw_name = input("Please enter your name: ")  # Type: str
 first_name = get_first_name(raw_name)   # Type: str
 
 # If the user didn't type anything in, use the fallback name
