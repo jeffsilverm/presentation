@@ -3,14 +3,17 @@
 
 import decimal
 import datetime
+import sys
+print("Running python version {}".format(sys.version_info) )
 
 # From https://docs.python.org/3/whatsnew/3.6.html#whatsnew36-pep498
 name = "Fred"
 print ( f"He said his name is {name}." )
 width = 10
 precision = 4
-value = decimal.Decimal("12.1234567890")
-print( f"result: {value:{width}.{precision}}")  # nested fields
+value_str = "12.123_456_789_0"
+value = decimal.Decimal(value_str)
+print( f"value_str is {value_str} result: {value:{width}.{precision}}")  # nested fields
 for w in range(20,9,-1):
     print(f"result: {value:{w}.{24-w}}")
 print("String literals using the format protocol")
