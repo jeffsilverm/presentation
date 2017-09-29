@@ -1,9 +1,9 @@
 #! /usr/bin/python3.6
 #  -*- coding: utf-8 -*-
 #
-# Demonstrates why use typing - this does and it will fail, BUT the problem
-# will be detected by mypy.
+# Demonstrates why use typing - this does not and it will fail.  Why?
 #
+import typing
 from typing import Dict
 
 
@@ -22,4 +22,7 @@ first_name: str  = get_first_name(raw_name)
 if not first_name:
     first_name: str = get_first_name(fallback_name)
 
-print(f"Hi, {first_name}!")
+print ( "Hi, {}!".format(first_name))
+
+
+
