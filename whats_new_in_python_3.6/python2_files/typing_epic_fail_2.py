@@ -4,7 +4,7 @@
 # Demonstrates why use typing - this does not and it will fail.  Why?
 #
 # Works (or fails) equally well on python 2.7 and 3.6 (and 3.5)
-# Description: no hinting, , python2 or python3
+# Description: no hinting, , python2 or python3, 2 calls to get_first_name
 #
 import sys
 
@@ -24,6 +24,11 @@ first_name = get_first_name(raw_name)
 # If the user didn't type anything in, use the fallback name
 if not first_name:
     first_name = get_first_name(fallback_name)
+
+# if
+if not first_name:
+    first_name = get_first_name(fallback_name)
+
 
 print(("Hi, %s!" % first_name ))
 
