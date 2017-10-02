@@ -18,7 +18,7 @@ def subr(arg_a: typing.Any, arg_b: int =42, arg_c: bool=False, *args, **kwargs):
     :return:
     """
 
-    print("\n\n")
+    print("\n\n",40*"*")
     if not isinstance(arg_b, int):
         print(f"Casting {arg_b} from {type(arg_b)} to str")
         arg_b = str(arg_b)
@@ -30,7 +30,7 @@ def subr(arg_a: typing.Any, arg_b: int =42, arg_c: bool=False, *args, **kwargs):
         print(arg)
     print(40*"-")
     for k in kwargs:
-        print("kargs[{}]={}".format(k, kwargs[k]))
+        print("kwargs[{}]={}".format(k, kwargs[k]))
 
 
 print("Running python version {:d}.{:d}".format(sys.version_info.major,
@@ -38,10 +38,12 @@ print("Running python version {:d}.{:d}".format(sys.version_info.major,
 
 subr ( arg_a="All arguments explicitly named", arg_b=11, arg_c=True,
        arg_d="arg_d", arg_e="Detroit", complex=3.4+2j, new_jersey="Trenton" )
+subr ( arg_a="arg_b is missing", arg_c=True,
+       arg_d="arg_d_again", arg_e="Elbe", BC="Victoria", new_jersey="Murray Hill" )
 subr ( "six", 11, truth=True, arg_d="arg_d", arg_e="Chicago",
        my_dictionary={'q':5, 'r':3}, maine="Portland")
 # Uncomment the following line to see mypy report an error
-subr ( 7.1, 8, "Bee!", False, "Sea", "Eric", "Gretchen", "Felicia", "Wu", p="P", w="W",seven=7 )
-subr ( 7.1, 8, False, "Gretchen", "Felicia", "Wu", p="P", w="W", seven=7 )
+# subr ( 7.1, 8, "Bee!", False, "Sea", "Eric", "Gretchen", "Felicia", "Wu", p="P", w="W",seven=7 )
+subr ( 7.2, 6, False, "Gretchen", "Felicia", "Wu", p="P", w="W", seven=7 )
 
 
