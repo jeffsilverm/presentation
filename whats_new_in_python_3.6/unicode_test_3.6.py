@@ -1,4 +1,4 @@
-#! /usr/bin/python
+#! /usr/bin/python3.6
 # -*- coding: utf-8 -*-
 #
 #
@@ -13,10 +13,6 @@ Judith    יהודית  Unicode
 Sarah    שרה Unicode
 """)
 
-# שרה
-
-# דניאל
-# יצחק
-# יהודית
-# דניאל
-#
+ΑΒΓΔΕ = "ΑΒΓΔΕ"
+αβγδε = "αβγδε"
+print("It's all Greek to me: {ΑΒΓΔΕ} or lower case {αβγδε}")
