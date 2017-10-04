@@ -6,6 +6,7 @@
 
 # PEP-506 describes the motivation for CSPRNG https://www.python.org/dev/peps/pep-0506/
 
+import tempfile
 import secrets
 import sys
 print(sys.version_info, sys.version)
@@ -28,3 +29,25 @@ while True:
             and sum(c.isdigit() for c in password) >= 3):
         break
 print(password)
+
+with tempfile.NamedTemporaryFile(delete=True) as f:
+    tempfile_name = f.name
+    encoded_tempfile_name = tempfile_name+"_base64_encoded.txt"
+    decoded_tempfile_name = tempfile_name + "_decoded"
+    random_buffer = secrets.token_bytes(1024)
+    f.write( random_buffer )
+    with open(encoded_tempfile_name, "w+b") as o:
+# See https://docs.python.org/3/library/base64.html?highlight=base64#module-base64
+        secrets.base64.encode(f, o )
+
+
+with tempfile.NamedTemporaryFile(delete=True) as f:
+    with open(encoded_tempfile_name, mode="r+b") as encoded:
+        secrets.base64.decode(encoded, f)
+    retreived_random_buffer = f.read(1024)
+    if secrets.compare_digest(random_buffer, retreived_random_buffer):
+        print("Successfully recovered a token using a random file {}".format(tempfile_name))
+    else :
+        print("FAILED to recover a token using a random file {}".format(tempfile_name))
+
+
