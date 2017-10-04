@@ -1,14 +1,17 @@
-#! /usr/bin/python
+#! /usr/bin/python3.6
 # -*- coding: utf-8 -*-
 #
 # This demonstrates that the named parameters in method calls are now ordered
-# in python 3.6
+# in python 3.6.  Also demonstrates a case where type annotation actually does
+# something useful.
+# Description: baseline, a python 3.6 program with kwargs and type annotation
 from __future__ import print_function
 import typing
 import sys
 
 
-def subr(arg_a: typing.Any, arg_b: int =42, arg_c: bool=False, *args, **kwargs):
+def subr(arg_a: typing.Any, arg_b: int = 42, arg_c: bool = False, *args,
+         **kwargs):
     """
     :param arg_a:   type:   any
     :param arg_b:   type:   int
@@ -18,17 +21,11 @@ def subr(arg_a: typing.Any, arg_b: int =42, arg_c: bool=False, *args, **kwargs):
     :return:
     """
 
-    print("\n\n",40*"*")
-    if not isinstance(arg_b, int):
-        print(f"Casting {arg_b} from {type(arg_b)} to str")
-        arg_b = str(arg_b)
-    if not isinstance(arg_c, int) and not isinstance(arg_c, bool) :
-        print(f"Casting {arg_c} from {type(arg_c)} to bool")
-        arg_c = bool(arg_c)
+    print("\n\n", 40 * "*")
     print("arg_a: {}\targ_b: {:d}\t arg_c: {:b}".format(arg_a, arg_b, arg_c))
-    for arg in args:
-        print(arg)
-    print(40*"-")
+    for i, arg in enumerate(args):
+        print(i, arg)
+    print(40 * "-")
     for k in kwargs:
         print("kwargs[{}]={}".format(k, kwargs[k]))
 
@@ -36,14 +33,28 @@ def subr(arg_a: typing.Any, arg_b: int =42, arg_c: bool=False, *args, **kwargs):
 print("Running python version {:d}.{:d}".format(sys.version_info.major,
                                                 sys.version_info.minor))
 
-subr ( arg_a="All arguments explicitly named", arg_b=11, arg_c=True,
-       arg_d="arg_d", arg_e="Detroit", complex=3.4+2j, new_jersey="Trenton" )
-subr ( arg_a="arg_b is missing", arg_c=True,
-       arg_d="arg_d_again", arg_e="Elbe", BC="Victoria", new_jersey="Murray Hill" )
-subr ( "six", 11, truth=True, arg_d="arg_d", arg_e="Chicago",
-       my_dictionary={'q':5, 'r':3}, maine="Portland")
-# Uncomment the following line to see mypy report an error
-# subr ( 7.1, 8, "Bee!", False, "Sea", "Eric", "Gretchen", "Felicia", "Wu", p="P", w="W",seven=7 )
-subr ( 7.2, 6, False, "Gretchen", "Felicia", "Wu", p="P", w="W", seven=7 )
-
-
+subr(arg_a=u"All arguments explicitly named", arg_b=11, arg_c=True,
+     kwarg_1="one", kwarg_2="two", kwarg_3="three", kwarg_4="four")
+# Pycharm detects that there is a data type error in this call
+subr("no arguments explicitly named", 11, True,
+     "unamed_1", "unamed_2", "unamed_3",
+     kwarg_1="one", kwarg_2="two", kwarg_3="three", kwarg_4="four")
+subr(arg_a=u"arg_b is missing", arg_c=True,
+     arg_d=u"arg_d_again", kwarg_1="one", kwarg_3="two", kwarg_2="three",
+     kwarg_4="four")
+subr(u"six", 11, truth=True, arg_d=u"arg_d",
+     kwarg_1="one", kwarg_4="two", kwarg_2="three", kwarg_3="four")
+# Uncomment the following line to see mypy report an error or see subr raise
+# a ValueError exception.  Pycharm also detects that the data type is wrong
+try:
+    subr(7.1, 8, "Bee!", False, "Sea", "Eric", "Gretchen", "Felicia",
+         "Wu",
+         kwarg_1="one", kwarg_4="four", kwarg_2="two", kwarg_3="three",
+         kwarg_5="five", kwarg_6="six")
+except ValueError as e:
+    sys.stderr.write("The subr call with Bee! raised a ValueError exception, "
+                     "as expected: {}\n\n".format(str(e)))
+else:
+    sys.stderr.write("The subr call with Bee! did **not** raise a ValueError "
+                     "exception, which is unexpected, in fact it is a FAIL\n\n")
+subr(7.2, 6, False, u"Gretchen", u"Felicia", u"Wu")
