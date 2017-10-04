@@ -27,3 +27,4 @@ while True:
             and any(c.isupper() for c in password)
             and sum(c.isdigit() for c in password) >= 3):
         break
+print(password)
