@@ -18,7 +18,7 @@ def my_coroutine(future, task_name, seconds_to_sleep=3):
 def terminal_reader(future):
     print("Waiting for terminal I/O")
     a_char = sys.stdin.read(1)
-    yield a_char
+    yield from asyncio.
 
 
 def got_result(future):
