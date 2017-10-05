@@ -23,19 +23,12 @@ Judith    יתדוהי  יהודית Unicode
 Sarah    הרש שרה  Unicode
 """
 
-# Python 2.7 evidently cannot handle unicode characters in identifiers
-# Python 3.6, at least, can.
-if sys.version_info.major == 3:
-    #    ΑΒΓΔΕ = "ΑΒΓΔΕ"
-    #    αβγδε = "αβγδε"
-    #    print("It's all Greek to me: {} or lower case {}".format(ΑΒΓΔΕ, αβγδε)
-    #    sys.stdout.write("Writing a string " + ΑΒΓΔΕ + "\n" )
-    pass
-else:
-    ABCDE = "ΑΒΓΔΕ"
-    abcde = "αβγδε"
-    print "It's all Greek to me: {} or lower case {}".format(ABCDE, abcde)
-    sys.stdout.write("Writing a string " + ABCDE + "\n")
+# In python 2.7, PEP-3131 https://www.python.org/dev/peps/pep-3131/ , doesn't
+# apply yet.
+ABCDE = "ΑΒΓΔΕ"
+abcde = "αβγδε"
+print "It's all Greek to me: {} or lower case {}".format(ABCDE, abcde)
+sys.stdout.write("Writing a string " + ABCDE + "\n")
 
 # שרה
 

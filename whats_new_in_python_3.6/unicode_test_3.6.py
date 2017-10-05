@@ -22,6 +22,8 @@ Judith    יתדוהי  יהודית Unicode
 Sarah    הרש שרה  Unicode
 """)
 
+# Unicode characters are allowed as identifier names.  See PEP 3131
+# https://www.python.org/dev/peps/pep-3131/
 ΑΒΓΔΕ = "ΑΒΓΔΕ"
 αβγδε = "αβγδε"
 print("It's all Greek to me: {ΑΒΓΔΕ} or lower case {αβγδε}")
