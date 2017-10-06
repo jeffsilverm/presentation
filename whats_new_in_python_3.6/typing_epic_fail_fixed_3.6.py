@@ -1,7 +1,7 @@
 #! /usr/bin/python3.6
 #  -*- coding: utf-8 -*-
 #
-# Demonstrate's why use typing - this program does and mypy will detect the problem
+# Demonstrates why use typing - this program does and mypy will detect the problem
 # This program is NOT version agnostic, only 3.6
 # Python 2 and 3:
 from __future__ import print_function
