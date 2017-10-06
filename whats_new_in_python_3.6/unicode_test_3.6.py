@@ -29,3 +29,9 @@ Sarah    הרש שרה  Unicode
 print("It's all Greek to me: {ΑΒΓΔΕ} or lower case {αβγδε}")
 
 sys.stdout.write("Writing a string " + ΑΒΓΔΕ + "\n" )
+
+# https://docs.python.org/3/library/locale.html#locale.getpreferredencoding
+import locale
+
+print( "The current system locale is " + locale.getpreferredencoding(do_setlocale=False) )
+
