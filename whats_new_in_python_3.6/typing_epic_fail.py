@@ -1,11 +1,10 @@
 #! /usr/bin/python
 #  -*- coding: utf-8 -*-
 #
-# DemonstrateJs why use typing - this program does not and it will fail.  Why?
+# Demonstrates why use typing - this program does not and it will fail.  Why?
 # This program is version agnostic
 # Python 2 and 3:
 from __future__ import print_function
-import builtins
 # Python 2 and 3:
 from builtins import input
 
