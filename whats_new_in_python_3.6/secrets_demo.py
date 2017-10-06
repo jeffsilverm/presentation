@@ -30,7 +30,7 @@ while True:
         break
 print(password)
 
-with tempfile.NamedTemporaryFile(delete=True) as f:
+with tempfile.NamedTemporaryFile(delete=False) as f:
     tempfile_name = f.name
     encoded_tempfile_name = tempfile_name+"_base64_encoded.txt"
     decoded_tempfile_name = tempfile_name + "_decoded"
