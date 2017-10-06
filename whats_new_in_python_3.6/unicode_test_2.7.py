@@ -37,3 +37,7 @@ sys.stdout.write("Writing a string " + ABCDE + "\n")
 # יהודית
 # דניאל
 #
+# https://docs.python.org/3/library/locale.html#locale.getpreferredencoding
+import locale
+
+print( "The current system locale is " + locale.getpreferredencoding(do_setlocale=False) )
