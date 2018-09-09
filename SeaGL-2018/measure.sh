@@ -7,7 +7,11 @@
 iptable() {
   command=$1
   P=$2
-  sudo iptables ${command} INPUT -m statistic --mode random --probability ${p} -j DROP
+  if [ "X${command}" = "X-L"; then
+    sudo iptables ${command} INPUT -m statistic --mode random --probability ${P}
+  else
+    sudo iptables ${command} INPUT -m statistic --mode random --probability ${P} -j DROP
+  fi
 }
 
 
@@ -17,10 +21,8 @@ REMOTE_4S=($REMOTE_4)
 REMOTE_4_ADDR=${REMOTE_4S[3]}
 REMOTE_6=`host -t AAAA $REMOTE`
 REMOTE_6S=($REMOTE_6)
-REMOTE_6_ADDR=${REMOTE_6S[3]}
+REMOTE_6_ADDR=${REMOTE_6S[4]}
 echo "Remote $REMOTE has IPv4 address $REMOTE_4_ADDR and IPv6 address $REMOTE_6_ADDR"
-exit 0
-
 date
 for P in 0.0 0.01 1.00; do
   # For more documentation on -m statistic extension, see man iptables-extensions
@@ -31,20 +33,21 @@ for P in 0.0 0.01 1.00; do
   iptable -A $P 
   for filename in 1000.txt 10000000.txt; do
     for family in "-4" "-6"; do
-      if [ family == "-4" ]; then
-         REMOTE=${REMOTE_4_ADDR}
+      if [ "X${family}" = "X-4" ]; then
+         REMOTE_ADDR=${REMOTE_4_ADDR}
       else
-         REMOTE=${REMOTE_6_ADDR}
+         REMOTE_ADDR=${REMOTE_6_ADDR}
       fi
+      echo "Family $family Remote address $REMOTE_ADDR"
       for protocol in http https ftp; do
         # FLUSH the counters
-        ip $family -oneline -s tcp_metrics flush address $REMOTE
-        echo "probability $p filename $filename family $family protocol $protocol"
-        time wget $family ${protocol}://${REMOTE}/$filename
+        sudo ip $family -oneline -s tcp_metrics flush address $REMOTE_ADDR
+        echo "probability $P filename $filename family $family protocol $protocol remote address ${REMOTE_ADDR} "
+        time wget $family --no-check-certificate ${protocol}://${REMOTE}/$filename
         # Get statistics on the tcp_metrics 
         # See man ip-tcp_metrics
         # SHOW the counters
-        ip $family -oneline -s tcp_metrics show address $REMOTE
+        ip $family -oneline -stats -details tcp_metrics show address $REMOTE_ADDR
       done
     done
   done
