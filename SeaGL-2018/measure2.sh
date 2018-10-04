@@ -45,15 +45,16 @@ RESULTS_FILE="wget_performance.results"
 # Have to first add a classless qdisc
 sudo tc qdisc add dev $INTERFACE root netem
 echo "Remote $REMOTE has IPv4 address $REMOTE_4_ADDR and IPv6 address $REMOTE_6_ADDR"
+# When adding indices, always make sure that 
 for loss in 1 5 10; do
   for delay in 0.1 0.2 0.5; do
 # See also https://www.cs.unm.edu/~crandall/netsfall13/TCtutorial.pdf
     sudo tc qdisc replace dev $INTERFACE root netem delay ${delay}ms loss ${loss}% 
-    echo -n "parameters `date` LOSS=${loss} DELAY=${delay} IPv4" >> $LOG_FILE
-    echo    "parameters `date` LOSS=${loss} DELAY=${delay} IPv4"
+    echo -n "parameters `date` LOSS=${loss} DELAY=${delay} PROTCOL=IPv4 " >> $LOG_FILE
+    echo    "parameters `date` LOSS=${loss} DELAY=${delay} PROTCOL=IPv4 "
     if ! wget -4 -a $LOG_FILE ftp://${REMOTE_4_ADDR}/8192.data; then echo "wget -4 FAILED"; exit 1; fi
-    echo -n "parameters `date` LOSS=${loss} DELAY=${delay} IPv6!" >> $LOG_FILE
-    echo    "parameters `date` LOSS=${loss} DELAY=${delay} IPv6!"
+    echo -n "parameters `date` LOSS=${loss} DELAY=${delay} PROTCOL=IPv6 " >> $LOG_FILE
+    echo    "parameters `date` LOSS=${loss} DELAY=${delay} PROTCOL=IPv6 "
     if ! wget -6 -a $LOG_FILE ftp://[${REMOTE_6_ADDR}]/8192.data; then echo "wget -6 FAILED"; exit 1; fi
   done
 done
