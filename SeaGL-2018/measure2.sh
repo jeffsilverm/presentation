@@ -27,8 +27,8 @@ network_em() {
 
 
 
-REMOTE="commercialventvac.com"
-# REMOTE="SMALL_DELL"
+# REMOTE="commercialventvac.com"
+REMOTE="SMALL_DELL"
 if [ "X${REMOTE}" = "XSMALL_DELL" ]; then
 	# Small Dell IPv4 RFC 1918 private IPv4 address
 	REMOTE_4_ADDR="192.168.0.25"
