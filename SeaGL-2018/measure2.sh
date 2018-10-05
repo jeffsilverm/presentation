@@ -50,7 +50,7 @@ sudo tc qdisc add dev $INTERFACE root netem
 echo "Remote $REMOTE has IPv4 address $REMOTE_4_ADDR and IPv6 address $REMOTE_6_ADDR" | tee -a $LOG_FILE
 # When adding indices, always make sure that the ordering is such that the most rapidly changing
 # index in the echo commands below is last on the line.
-for size in 1000.txt 1000000.txt; do
+for size in 1024.data 2048.data ; do
 	for loss in 1 5 10; do
 		for delay in 0.1 0.2 0.5; do
 			# See also https://www.cs.unm.edu/~crandall/netsfall13/TCtutorial.pdf
