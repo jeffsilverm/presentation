@@ -55,21 +55,17 @@ for size in 1024.data 2048.data ; do
 		for delay in 0.1 0.2 0.5; do
 			# See also https://www.cs.unm.edu/~crandall/netsfall13/TCtutorial.pdf
 			sudo tc qdisc replace dev $INTERFACE root netem delay ${delay}ms loss ${loss}% 
-			for protocol in 4 6; do
-				if [ $protocol -eq 4 ] ; then
-					REMOTE_ADDR=$REMOTE_4_ADDR
-				else
-					REMOTE_ADDR=$REMOTE_6_ADDR
-				fi
-				echo -n "parameters SIZE=${size} LOSS=${loss} DELAY=${delay} PROTCOL=IPv${protocol} " >> $LOG_FILE
-				echo " "
-				if ! wget -${protocol} -a $LOG_FILE ftp://${REMOTE_ADDR}/${size}; then
-					echo "wget -${protocol} ftp://${REMOTE_ADDR}/${size} FAILED"; exit 1; fi
-			done
+			echo -n "parameters SIZE=${size} LOSS=${loss} DELAY=${delay} PROTOCOL=IPv4 " | tee -a  $LOG_FILE
+			if ! wget -4 -a $LOG_FILE ftp://${REMOTE_4_ADDR}/${size}; then
+				echo "wget -6 ftp://${REMOTE_ADDR}/${size} FAILED"; exit 1; fi
+			echo -n "parameters SIZE=${size} LOSS=${loss} DELAY=${delay} PROTOCOL=IPv6  " | tee -a $LOG_FILE
+			if ! wget -6 -a $LOG_FILE ftp://[${REMOTE_6_ADDR}]/${size}; then
+				echo "wget -6 ftp://${REMOTE_ADDR}/${size} FAILED"; exit 1; fi
+			echo " "
 		done
 	done
 done
-rm 100*.txt
+rm *.data
 # Clean up - remove the classless qdisc
 sudo tc qdisc delete dev $INTERFACE root netem
 echo "Raw results in file $LOG_FILE .  Scrubbed results in $RESULTS_FILE"
