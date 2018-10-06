@@ -6,14 +6,14 @@
 # pandas multiframe and then saves
 # it in a file
 
+# For debugging
+import pprint
 import re
 import sys
 from typing import Tuple, List
 
 import pandas as pd
 
-# For debugging
-import pprint
 pp = pprint.PrettyPrinter(indent=2, width=80)
 
 
@@ -33,50 +33,56 @@ def load_data(filename: str) -> Tuple:
     # 2602:4b:ac60:9b00:bf35:14d2:bba0:ae44]/8192.data
     # get_params_pc = re.compile(""" (\S+?)=(\d*?) """, flags=1)
     # (11.1 MB/s)"
-    get_bytes_per_sec_pc = re.compile("""\((\d*?\.\d*?) MB\/s\)""")
+    get_bytes_per_sec_pc = re.compile("""\((\d*?\.\d*?) MB/s\)""")
 
-    # Get the names of all of the indices
-    parameter_name_list = []
-    parameter_value_list = []
-    parameter_idx_list = []
     with open(filename, "r") as f:
         contents = f.readlines()
-        word_list = contents[0].split()
-        for j in range(len(word_list)):
-            word=word_list[j]
-            if "=" not in word:
-                continue
-            kv_pair = word.split("=")
-            parameter_name_list.append(kv_pair[0])   # The key
-            parameter_value_list.append(kv_pair[1])  # The value
-            parameter_idx_list.append(j)
 
     # The data dictionary, keyed by a tuple of the values of each degree of
     # freedom
+
     d3 = dict()
+    parameter_name_list = []
     for i in range(0, len(contents), 2):
-        keys_list = []
-        # There will be one match in this line, but it won't be at the start of the line
-        # The end of the number will be followed by the string " MB/s)" which we want to filterr
+        # Get the names of all of the indices
+        parameter_name_list = []
+        parameter_value_list = []
+        word_list: List[str] = contents[i].split()
+        for j in range(len(word_list)):
+            word: str = word_list[j]
+            if "=" not in word:
+                continue
+            kv_pair: List[str] = word.split("=")
+            # This is a special case.  The sizes come from the file name and the
+            # filename always ends with .data
+            if ".data" in kv_pair[1]:
+                end = kv_pair[1].find(".data")
+                kv_pair[1] = kv_pair[1][:end]
+            parameter_name_list.append(kv_pair[0])  # The key
+            parameter_value_list.append(kv_pair[1])  # The value
+        dict_key_tuple = tuple(parameter_value_list)
+        # There will be one match in this line, but it won't be at the start
+        # of the line
+        # The end of the number will be followed by the string " MB/s)" which
+        #  we want to filterr
         # out, hence the [1:-6)
-        data_rate_str: str = get_bytes_per_sec_pc.search(contents[i + 1])[0][1:-6]
+        data_rate_str: str = get_bytes_per_sec_pc.search(contents[i + 1])[0][
+                             1:-6]
         data_rate_value: float = float(data_rate_str)
-        words = contents[i].split()
-        for j in range(0, len(words)):
-            key, value = words[j].split("=")
-            assert key == parameter_name_list[j] and value == \
-                parameter_value_list[j], \
-                f"In line {i}, word {j} shouold be " \
-                f"{parameter_name_list[j]}={parameter_value_list[j]}" \
-                f"but is actually {key}={value}"
-            keys_list.append(value)
-        keys_tuple = tuple(keys_list)
-        d3[keys_tuple] = data_rate_value
-    mux = pd.MultiIndex.from_tuples(d3.keys(), levels=len(parameter_name_list),
-                                    names=parameter_name_list)
+        d3[dict_key_tuple] = data_rate_value
+
+    mux = pd.MultiIndex.from_tuples(d3.keys(), names=parameter_name_list)
     data_frame = pd.DataFrame(list(d3.values()), index=mux)
     return parameter_name_list, data_frame
 
 
 if "__main__" == __name__:
-    parameter_name_lst, df = load_data(sys.argv[1])
+    file_name = sys.argv[1]
+    parameter_name_lst, df = load_data(filename=file_name)
+    print(df)
+    output_filename = file_name + '.h5'
+    store = pd.HDFStore(output_filename)
+    store['df'] = df
+    print("The dataframe was saved in " + output_filename)
+    store.close()
+    #
