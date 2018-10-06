@@ -56,6 +56,7 @@ for size in 1024.data 2048.data ; do
 			# See also https://www.cs.unm.edu/~crandall/netsfall13/TCtutorial.pdf
 			sudo tc qdisc replace dev $INTERFACE root netem delay ${delay}ms loss ${loss}% 
 			echo -n "parameters SIZE=${size} LOSS=${loss} DELAY=${delay} PROTOCOL=IPv4 " | tee -a  $LOG_FILE
+			echo " "
 			if ! wget -4 -a $LOG_FILE ftp://${REMOTE_4_ADDR}/${size}; then
 				echo "wget -6 ftp://${REMOTE_ADDR}/${size} FAILED"; exit 1; fi
 			echo -n "parameters SIZE=${size} LOSS=${loss} DELAY=${delay} PROTOCOL=IPv6  " | tee -a $LOG_FILE
@@ -71,4 +72,11 @@ sudo tc qdisc delete dev $INTERFACE root netem
 echo "Raw results in file $LOG_FILE .  Scrubbed results in $RESULTS_FILE"
 egrep "saved|parameters" $LOG_FILE > $RESULTS_FILE
 
-
+exit 0
+# Change TCP window size
+# From https://netbeez.net/blog/how-to-adjust-the-tcp-window-size-limit-on-linux/
+#echo 'net.core.wmem_max=4194304' &gt;&gt; /etc/sysctl.conf
+#echo 'net.core.rmem_max=12582912' &gt;&gt; /etc/sysctl.conf
+#echo 'net.ipv4.tcp_rmem = 4096 87380 4194304' &gt;&gt; /etc/sysctl.conf
+#echo 'net.ipv4.tcp_wmem = 4096 87380 4194304' &gt;&gt; /etc/sysctl.conf
+sysctl -p
