@@ -24,8 +24,9 @@ network_em() {
 
 
 
-
-
+if [ -f *.data.* ]; then
+    rm *.data.*
+fi
 
 # REMOTE="commercialventvac.com"
 REMOTE="SMALL_DELL"
@@ -34,7 +35,7 @@ if [ "X${REMOTE}" = "XSMALL_DELL" ]; then
 	REMOTE_4_ADDR="192.168.0.25"
 	# Small Dell IPv6 IPv6 address
 	REMOTE_6_ADDR="2602:4b:ac60:9b00:bf35:14d2:bba0:ae44" 
-	INTERFACE="enp3s0"
+	INTERFACE="eno1"
 else
 	REMOTE_4=`host -t A $REMOTE`
 	REMOTE_4S=($REMOTE_4)
@@ -56,19 +57,21 @@ sudo tc qdisc add dev $INTERFACE root netem
 echo "Remote $REMOTE has IPv4 address $REMOTE_4_ADDR and IPv6 address $REMOTE_6_ADDR" | tee -a $LOG_FILE
 # When adding indices, always make sure that the ordering is such that the most rapidly changing
 # index in the echo commands below is last on the line.
-for size in 1024.data 2048.data ; do
-	for loss in 1 5 10; do
-		for delay in 0.1 0.2 0.5; do
+for size in 1024.data 2048.data 4096.data; do
+	for loss in 10 20 50 75 100; do
+		for delay in 10.0 20.0 50.0 100.0; do
 			# See also https://www.cs.unm.edu/~crandall/netsfall13/TCtutorial.pdf
 			sudo tc qdisc replace dev $INTERFACE root netem delay ${delay}ms loss ${loss}% 
-			echo -n "parameters SIZE=${size} LOSS=${loss} DELAY=${delay} PROTOCOL=IPv4 " | tee -a  $LOG_FILE
+			echo -n "parameters SIZE=${size} LOSS=${loss} DELAY=${delay} PROTOCOL=IPv4 " >> $LOG_FILE
 			echo " "
-			if ! wget -4 -a $LOG_FILE ftp://${REMOTE_4_ADDR}/${size}; then
+			if ! time wget -4 -a $LOG_FILE ftp://${REMOTE_4_ADDR}/${size}; then
 				echo "wget -6 ftp://${REMOTE_ADDR}/${size} FAILED"; exit 1; fi
-			echo -n "parameters SIZE=${size} LOSS=${loss} DELAY=${delay} PROTOCOL=IPv6  " | tee -a $LOG_FILE
-			if ! wget -6 -a $LOG_FILE ftp://[${REMOTE_6_ADDR}]/${size}; then
+			egrep "LOSS=| saved " wget_performance.log | tail -2 $LOG_FILE
+			echo -n "parameters SIZE=${size} LOSS=${loss} DELAY=${delay} PROTOCOL=IPv6  " >> $LOG_FILE
+			if ! time wget -6 -a $LOG_FILE ftp://[${REMOTE_6_ADDR}]/${size}; then
 				echo "wget -6 ftp://${REMOTE_ADDR}/${size} FAILED"; exit 1; fi
 			echo " "
+			egrep "LOSS=| saved " wget_performance.log | tail -2 $LOG_FILE
 		done
 	done
 done
@@ -77,6 +80,8 @@ rm *.data
 sudo tc qdisc delete dev $INTERFACE root netem
 echo "Raw results in file $LOG_FILE .  Scrubbed results in $RESULTS_FILE"
 egrep "saved|parameters" $LOG_FILE > $RESULTS_FILE
+echo "RUnning results2MultiIndex.py"
+python3 results2MultiIndex.py $RESULTS_FILE
 
 exit 0
 # Change TCP window size
