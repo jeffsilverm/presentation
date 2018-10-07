@@ -10,7 +10,7 @@
 import pprint
 import re
 import sys
-from typing import Tuple, List, Union
+from typing import Tuple, List, Union, Match
 
 import numpy as np
 import pandas as pd
@@ -34,7 +34,9 @@ def load_data(filename: str) -> Tuple:
     # 2602:4b:ac60:9b00:bf35:14d2:bba0:ae44]/8192.data
     # get_params_pc = re.compile(""" (\S+?)=(\d*?) """, flags=1)
     # (11.1 MB/s)"
-    get_bytes_per_sec_pc = re.compile("""\((\d*?\.\d*?) MB/s\)""")
+    # (277 MB/s) is also a valid output
+    # (136 KB/s) has been seen
+    get_bytes_per_sec_pc = re.compile("""\(([0-9.]*) ([MK])B/s\)""")
 
     with open(filename, "r") as f:
         contents = f.readlines()
@@ -76,12 +78,32 @@ def load_data(filename: str) -> Tuple:
         dict_key_tuple = tuple(parameter_value_list)
         # There will be one match in this line, but it won't be at the start
         # of the line
-        # The end of the number will be followed by the string " MB/s)" which
-        #  we want to filterr
-        # out, hence the [1:-6)
-        data_rate_str: str = get_bytes_per_sec_pc.search(contents[i + 1])[0][
-                             1:-6]
-        data_rate_value: float = float(data_rate_str)
+        mo = [None, None]
+        try:
+            # The type hint comes from
+            # https://mypy.readthedocs.io/en/latest/cheat_sheet_py3.html
+            mo: Match[str] = get_bytes_per_sec_pc.search(contents[i + 1])
+            if mo is None:
+                raise TypeError
+            data_rate_value: float = float(mo[1])
+        except TypeError as t:
+            print("RE Search failed to find the data rate string. i+1 is "
+                  f"{i+1}, contents[i+1] is\n{contents[i+1]}\n{str(t)} "
+                  "Continue with 0")
+            data_rate_value = 0.0
+        except ValueError as v:
+            print(f"RE Search returned a bad floating point number: {mo[0]}"
+                  f" {str(v)} contents[{i+1} is \n{contents[i+1]}\n"
+                  "Continue with 0")
+            data_rate_value = 0.0
+        if mo[2] == "M":
+            data_rate_value *= 1000000
+        elif mo[2] == "K":
+            data_rate_value *= 1000
+        else:
+            raise ValueError(f"mo[1] is {mo[1]}  "
+                             f"contents[{i+1}] is \n{contents[i+1]}\nContinue "
+                             f"with 1")
         d3[dict_key_tuple] = data_rate_value
         parameter_value_list.append(data_rate_value)
         all_values_list.append(parameter_value_list)
