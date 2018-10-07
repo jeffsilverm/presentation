@@ -55,13 +55,24 @@ def load_data(filename: str) -> Tuple:
             if "=" not in word:
                 continue
             kv_pair: List[str] = word.split("=")
+            key = kv_pair[0]
+            value = kv_pair[1]
             # This is a special case.  The sizes come from the file name and the
             # filename always ends with .data
-            if ".data" in kv_pair[1]:
-                end = kv_pair[1].find(".data")
-                kv_pair[1] = kv_pair[1][:end]
-            parameter_name_list.append(kv_pair[0])  # The key
-            parameter_value_list.append(kv_pair[1])  # The value
+            if ".data" in value:
+                end = value.find(".data")
+                value = value[:end]
+                value = int(value)
+            elif key == "PROTOCOL":
+                pass
+            elif key in ["LOSS", "DELAY", "bandwidth"]:
+                value = float(value)
+            else:
+                raise ValueError(
+                    f"key is {key} but it should be one of LOSS, DELAY, "
+                    f"PROTOCOL or BANDWIDTH")
+            parameter_name_list.append(key)  # The key
+            parameter_value_list.append(value)  # The value
         dict_key_tuple = tuple(parameter_value_list)
         # There will be one match in this line, but it won't be at the start
         # of the line
