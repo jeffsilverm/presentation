@@ -10,8 +10,9 @@
 import pprint
 import re
 import sys
-from typing import Tuple, List
+from typing import Tuple, List, Union
 
+import numpy as np
 import pandas as pd
 
 pp = pprint.PrettyPrinter(indent=2, width=80)
@@ -43,10 +44,11 @@ def load_data(filename: str) -> Tuple:
 
     d3 = dict()
     parameter_name_list = []
+    all_values_list = list()
     for i in range(0, len(contents), 2):
         # Get the names of all of the indices
-        parameter_name_list = []
-        parameter_value_list = []
+        parameter_name_list: List[str] = []
+        parameter_value_list: List[Union[str, float]] = []
         word_list: List[str] = contents[i].split()
         for j in range(len(word_list)):
             word: str = word_list[j]
@@ -70,19 +72,35 @@ def load_data(filename: str) -> Tuple:
                              1:-6]
         data_rate_value: float = float(data_rate_str)
         d3[dict_key_tuple] = data_rate_value
+        parameter_value_list.append(data_rate_value)
+        all_values_list.append(parameter_value_list)
+        pass
+
+    # parameter_name_list.append("data_rate")
+    values_list = list(d3.values())
+
+    np_array = np.array(all_values_list)
 
     mux = pd.MultiIndex.from_tuples(d3.keys(), names=parameter_name_list)
-    data_frame = pd.DataFrame(list(d3.values()), index=mux)
-    return parameter_name_list, data_frame
+    # A MultiIndex DataFrame
+    data_frame_mi = pd.DataFrame(values_list, index=mux, columns=['bandwidth'])
+    data_frame_mi.rename_axis(axis=1, mapper="data_rate", inplace=True)
+    # A DataFrame that just has columns
+    data_frame_cs = pd.DataFrame(columns=parameter_name_list + ['bandwidth'],
+                                 data=np_array)
+
+    return parameter_name_list, data_frame_mi, data_frame_cs
 
 
 if "__main__" == __name__:
     file_name = sys.argv[1]
-    parameter_name_lst, df = load_data(filename=file_name)
-    print(df)
+    parameter_name_lst, df_mi, df_cs = load_data(filename=file_name)
+    print(df_mi)
+    print(df_cs)
     output_filename = file_name + '.h5'
     store = pd.HDFStore(output_filename)
-    store['df'] = df
-    print("The dataframe was saved in " + output_filename)
+    store['df_mi'] = df_mi
+    store['df_cs'] = df_cs
+    print("The dataframes were saved in " + output_filename)
     store.close()
     #
