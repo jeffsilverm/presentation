@@ -45,6 +45,12 @@ else
 fi
 LOG_FILE="wget_performance.log"
 RESULTS_FILE="wget_performance.results"
+if [ -f $RESULTS_FILE ]; then
+  rm $RESULTS_FILE
+fi
+if [ -f $LOG_FILE ]; then
+  rm $LOG_FILE
+fi
 # Have to first add a classless qdisc
 sudo tc qdisc add dev $INTERFACE root netem
 echo "Remote $REMOTE has IPv4 address $REMOTE_4_ADDR and IPv6 address $REMOTE_6_ADDR" | tee -a $LOG_FILE
