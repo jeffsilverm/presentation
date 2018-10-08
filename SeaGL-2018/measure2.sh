@@ -64,11 +64,13 @@ for size in 1024.data 2048.data 4096.data; do
 			echo -n "parameters SIZE=${size} LOSS=${loss} DELAY=${delay} PROTOCOL=IPv4 " >> $LOG_FILE
 			echo " "
 			if ! time wget -4 -a $LOG_FILE ftp://${REMOTE_4_ADDR}/${size}; then
-				echo "wget -6 ftp://${REMOTE_ADDR}/${size} FAILED"; exit 1; fi
+				echo "wget -6 ftp://${REMOTE_ADDR}/${size} FAILED" | tee -a $LOG_FILE
+			fi
 			egrep "LOSS=| saved " $LOG_FILE | tail -2 
 			echo -n "parameters SIZE=${size} LOSS=${loss} DELAY=${delay} PROTOCOL=IPv6  " >> $LOG_FILE
 			if ! time wget -6 -a $LOG_FILE ftp://[${REMOTE_6_ADDR}]/${size}; then
-				echo "wget -6 ftp://${REMOTE_ADDR}/${size} FAILED"; exit 1; fi
+				echo "wget -6 ftp://${REMOTE_ADDR}/${size} FAILED" | tee -a $LOG_FILE
+			fi 
 			echo " "
 			egrep "LOSS=| saved " $LOG_FILE | tail -2 
 		done
