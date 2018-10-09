@@ -53,15 +53,18 @@ def load_data(filename: str) -> Tuple:
         parameter_name_list: List[str] = []
         parameter_value_list: List[Union[str, float]] = []
         word_list: List[str] = contents[i].split()
-        # This happened.  I don't know how or why.  But assume that an
-        # IndexError means it's time to quit.
+        if word_list[0] != "parameters":
+            raise ValueError(
+                f"The first word in line {i} should be 'parameters', but is "
+                f"really {word_list[0]}.  The line is \n{contents[i]}\n" +
+                ("The line before is \n{contents[i-1]\n" if i > 0 else ""))
         for j in range(len(word_list)):
             word: str = word_list[j]
             if "=" not in word:
                 continue
             kv_pair: List[str] = word.split("=")
-            key = kv_pair[0]
-            value = kv_pair[1]
+            key: str = kv_pair[0]
+            value: str = kv_pair[1]
             # This is a special case.  The sizes come from the file name and the
             # filename always ends with .data
             if ".data" in value:
@@ -69,7 +72,10 @@ def load_data(filename: str) -> Tuple:
                 value = value[:end]
                 value = int(value)
             elif key == "PROTOCOL":
-                pass
+                # value needs no further processing, it can be only be:
+                assert value == "IPv4" or value == "IPv6", \
+                    f"value is {value} and should be either IPv4 or IPv6, " \
+                    f"i={i}, contents[{i}]=\n{contents[i]}"
             elif key in ["LOSS", "DELAY", "bandwidth"]:
                 value = float(value)
             else:
@@ -82,6 +88,28 @@ def load_data(filename: str) -> Tuple:
         # There will be one match in this line, but it won't be at the start
         # of the line
         mo = [None, None]
+        assert len(dict_key_tuple) == 4, f"Length of dict_key_tuple is " \
+                                         f"{len(dict_key_tuple)}, i is {i}, " \
+                                         f"contents[{i}] is {contents[i]}"
+        # This might happen if we run results2MultiIndex.py on a results file
+        # that is still getting written to
+        if i >= len(contents) - 1:
+            print(
+                "Exiting perhaps prematurely - are you analyzing data from a "
+                "running measurement run?"
+                f'  i is {i}, len(contents) is {len(contents)} and\n ' +
+                "\n".join(contents[-4:]), file=sys.stderr)
+            break
+        if "saved" not in contents[i + 1]:
+            # If "saved" is not in contents[i+1], then that means wget failed
+            # to transfer the file.  This will happen if the loss rate is so
+            # high that TCP can't recover.  In that case, just mark the
+            # bandwidth as 0, and skip this step
+            print(f"'saved' is not in contents[{i+1}],\n{contents[i:i+1]}\n"
+                  f"{dict_key_tuple}, so set bandwidth to 0", file=sys.stderr)
+            d3[dict_key_tuple] = 0.0
+            i -= 1  # Because we're incrementing by 2
+            continue
         try:
             # The type hint comes from
             # https://mypy.readthedocs.io/en/latest/cheat_sheet_py3.html
