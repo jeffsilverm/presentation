@@ -1,4 +1,4 @@
-#! /bin/bash
+# /bin/bash
 #
 # This bashscript makes measurements of how long it takes to
 # down load files for different combinations of packet loss
@@ -23,18 +23,18 @@ network_em() {
 }
 
 
+# Get rid of any cruft from previous runs
+rm *.data.*
 
-
-
-
+HOSTNAME="jeffs-desktop"
+#HOSTNAME="smalldell"
 # REMOTE="commercialventvac.com"
 REMOTE="SMALL_DELL"
 if [ "X${REMOTE}" = "XSMALL_DELL" ]; then
 	# Small Dell IPv4 RFC 1918 private IPv4 address
-	REMOTE_4_ADDR="192.168.0.25"
+	REMOTE_4_ADDR="192.168.0.3"
 	# Small Dell IPv6 IPv6 address
-	REMOTE_6_ADDR="2602:4b:ac60:9b00:bf35:14d2:bba0:ae44" 
-	INTERFACE="enp3s0"
+	REMOTE_6_ADDR="2602:47:d433:bb00:99d1:b78c:dd68:1477"
 else
 	REMOTE_4=`host -t A $REMOTE`
 	REMOTE_4S=($REMOTE_4)
@@ -43,26 +43,51 @@ else
 	REMOTE_6S=($REMOTE_6)
 	REMOTE_6_ADDR=${REMOTE_6S[4]}
 fi
-LOG_FILE="wget_performance.log"
-RESULTS_FILE="wget_performance.results"
+if [ "X${HOSTNAME}" = "Xjeffs-desktop" ] ; then
+	# Get rid of a local idiosyncrasy of mine that happens to really break the results file
+	unalias egrep
+	INTERFACE="eno1"
+elif  [ "X${HOSTNAME}" = "Xsmalldell" ] ; then
+	IntERFACE="enp0s25"
+else
+	echo "HOSTNAME is $HOSTNAME which is a bad name"
+	exit 1
+fi
+LOG_FILE="ftp_performance.log"
+RESULTS_FILE="ftp_performance.results"
+if [ -f $RESULTS_FILE ]; then
+  rm $RESULTS_FILE
+fi
+if [ -f $LOG_FILE ]; then
+  rm $LOG_FILE
+fi
 # Have to first add a classless qdisc
 sudo tc qdisc add dev $INTERFACE root netem
 echo "Remote $REMOTE has IPv4 address $REMOTE_4_ADDR and IPv6 address $REMOTE_6_ADDR" | tee -a $LOG_FILE
 # When adding indices, always make sure that the ordering is such that the most rapidly changing
 # index in the echo commands below is last on the line.
-for size in 1024.data 2048.data ; do
-	for loss in 1 5 10; do
-		for delay in 0.1 0.2 0.5; do
+for size in 1024.data 2048.data 4096.data; do
+	# There is a bug in tc: it won't handle 0 as a valid loss rate.
+	for loss in  0.000000001 10 20 50 75 100; do
+		for delay in  0 10.0 20.0 50.0 100.0; do
 			# See also https://www.cs.unm.edu/~crandall/netsfall13/TCtutorial.pdf
 			sudo tc qdisc replace dev $INTERFACE root netem delay ${delay}ms loss ${loss}% 
-			echo -n "parameters SIZE=${size} LOSS=${loss} DELAY=${delay} PROTOCOL=IPv4 " | tee -a  $LOG_FILE
+			sudo tc qdisc show dev $INTERFACE | tee -a $LOG_FILE
+			echo -n "parameters SIZE=${size} LOSS=${loss} DELAY=${delay} PROTOCOL=IPv4 " >> $LOG_FILE
 			echo " "
-			if ! wget -4 -a $LOG_FILE ftp://${REMOTE_4_ADDR}/${size}; then
-				echo "wget -6 ftp://${REMOTE_ADDR}/${size} FAILED"; exit 1; fi
-			echo -n "parameters SIZE=${size} LOSS=${loss} DELAY=${delay} PROTOCOL=IPv6  " | tee -a $LOG_FILE
-			if ! wget -6 -a $LOG_FILE ftp://[${REMOTE_6_ADDR}]/${size}; then
-				echo "wget -6 ftp://${REMOTE_ADDR}/${size} FAILED"; exit 1; fi
+			if ! time wget -4 -a $LOG_FILE ftp://${REMOTE_4_ADDR}/${size}; then
+				echo "wget -4 ftp://${REMOTE_ADDR}/${size} FAILED" | tee -a $LOG_FILE
+				echo "`date +"%Y-%M-%d %H:%M:%S"`(0.0 KB/s) - ‘${size}’ saved [0]" | tee -a $LOG_FILE
+
+			fi
+			egrep "LOSS=| saved " $LOG_FILE | tail -2 
+			echo -n "parameters SIZE=${size} LOSS=${loss} DELAY=${delay} PROTOCOL=IPv6  " >> $LOG_FILE
+			if ! time wget -6 -a $LOG_FILE ftp://[${REMOTE_6_ADDR}]/${size}; then
+				echo "wget -6 ftp://${REMOTE_ADDR}/${size} FAILED" | tee -a $LOG_FILE
+				echo "`date +"%Y-%M-%d %H:%M:%S"`(0.0 KB/s) - ‘${size}’ saved [0]" | tee -a $LOG_FILE
+			fi
 			echo " "
+			egrep "LOSS=| saved " $LOG_FILE | tail -2 
 		done
 	done
 done
@@ -71,6 +96,8 @@ rm *.data
 sudo tc qdisc delete dev $INTERFACE root netem
 echo "Raw results in file $LOG_FILE .  Scrubbed results in $RESULTS_FILE"
 egrep "saved|parameters" $LOG_FILE > $RESULTS_FILE
+echo "RUnning results2MultiIndex.py"
+python3 results2MultiIndex.py $RESULTS_FILE
 
 exit 0
 # Change TCP window size
