@@ -26,14 +26,19 @@ network_em() {
 # Get rid of any cruft from previous runs
 rm *.data.*
 
+REMOTE="jeffs-desktop"
+
 if [ "X${REMOTE}" = "XSMALL_DELL" ]; then
 	# Small Dell IPv4 RFC 1918 private IPv4 address
 	REMOTE_4_ADDR="192.168.0.3"
 	# Small Dell IPv6 IPv6 address
 	REMOTE_6_ADDR="2602:47:d433:bb00:99d1:b78c:dd68:1477"
+elif [ "X${REMOTE}" = "Xjeffs-desktop" ]; then
+ 	REMOTE_4_ADDR="192.168.0.21"
+ 	REMOTE_6_ADDR="2602:4b:ac68:b00:9e80:c519:f006:59c"
 else
 	REMOTE_4=`host -t A $REMOTE`
-	REMOTE_4S=($REMOTE_4)
+	REMOTE_4S=($REMOTE_4)			# Only needed to extract IPv4 address from host command
 	REMOTE_4_ADDR=${REMOTE_4S[3]}
 	REMOTE_6=`host -t AAAA $REMOTE`
 	REMOTE_6S=($REMOTE_6)

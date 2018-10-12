@@ -26,14 +26,19 @@ network_em() {
 # Get rid of any cruft from previous runs
 rm *.data.*
 
+REMOTE="jeffs-desktop"
+
 if [ "X${REMOTE}" = "XSMALL_DELL" ]; then
 	# Small Dell IPv4 RFC 1918 private IPv4 address
 	REMOTE_4_ADDR="192.168.0.3"
 	# Small Dell IPv6 IPv6 address
 	REMOTE_6_ADDR="2602:47:d433:bb00:99d1:b78c:dd68:1477"
+elif [ "X${REMOTE}" = "Xjeffs-desktop" ]; then
+	REMOTE_4_ADDR="192.168.0.21"
+	REMOTE_6_ADDR="2602:4b:ac68:b00:9e80:c519:f006:59c"
 else
 	REMOTE_4=`host -t A $REMOTE`
-	REMOTE_4S=($REMOTE_4)
+	REMOTE_4S=($REMOTE_4)			# Only needed to extract IPv4 address from host command
 	REMOTE_4_ADDR=${REMOTE_4S[3]}
 	REMOTE_6=`host -t AAAA $REMOTE`
 	REMOTE_6S=($REMOTE_6)
@@ -49,8 +54,8 @@ else
 	echo "HOSTNAME is $HOSTNAME which is a bad name"
 	exit 1
 fi
-LOG_FILE="http_performance.log"
-RESULTS_FILE="http_performance.results"
+LOG_FILE="https_performance.log"
+RESULTS_FILE="https_performance.results"
 if [ -f $RESULTS_FILE ]; then
   rm $RESULTS_FILE
 fi
@@ -71,15 +76,15 @@ for size in 1024.data 2048.data 4096.data; do
 			sudo tc qdisc show dev $INTERFACE | tee -a $LOG_FILE
 			echo -n "parameters SIZE=${size} LOSS=${loss} DELAY=${delay} PROTOCOL=IPv4 " >> $LOG_FILE
 			echo " "
-			if ! time wget -4 -a $LOG_FILE http://${REMOTE_4_ADDR}/${size}; then
-				echo "wget -4 http://${REMOTE_ADDR}/${size} FAILED" | tee -a $LOG_FILE
+			if ! time wget -4 -a $LOG_FILE https://${REMOTE_4_ADDR}/${size}; then
+				echo "wget -4 https://${REMOTE_ADDR}/${size} FAILED" | tee -a $LOG_FILE
 				echo "`date +"%Y-%M-%d %H:%M:%S"`(0.0 KB/s) - ‘${size}’ saved [0]" | tee -a $LOG_FILE
 
 			fi
 			egrep "LOSS=| saved " $LOG_FILE | tail -2 
 			echo -n "parameters SIZE=${size} LOSS=${loss} DELAY=${delay} PROTOCOL=IPv6  " >> $LOG_FILE
-			if ! time wget -6 -a $LOG_FILE http://[${REMOTE_6_ADDR}]/${size}; then
-				echo "wget -6 http://${REMOTE_ADDR}/${size} FAILED" | tee -a $LOG_FILE
+			if ! time wget -6 -a $LOG_FILE https://[${REMOTE_6_ADDR}]/${size}; then
+				echo "wget -6 https://${REMOTE_ADDR}/${size} FAILED" | tee -a $LOG_FILE
 				echo "`date +"%Y-%M-%d %H:%M:%S"`(0.0 KB/s) - ‘${size}’ saved [0]" | tee -a $LOG_FILE
 			fi
 			echo " "
