@@ -26,10 +26,6 @@ network_em() {
 # Get rid of any cruft from previous runs
 rm *.data.*
 
-HOSTNAME="jeffs-desktop"
-#HOSTNAME="smalldell"
-# REMOTE="commercialventvac.com"
-REMOTE="SMALL_DELL"
 if [ "X${REMOTE}" = "XSMALL_DELL" ]; then
 	# Small Dell IPv4 RFC 1918 private IPv4 address
 	REMOTE_4_ADDR="192.168.0.3"
@@ -48,13 +44,13 @@ if [ "X${HOSTNAME}" = "Xjeffs-desktop" ] ; then
 	unalias egrep
 	INTERFACE="eno1"
 elif  [ "X${HOSTNAME}" = "Xsmalldell" ] ; then
-	IntERFACE="enp0s25"
+	INTERFACE="enp0s25"
 else
 	echo "HOSTNAME is $HOSTNAME which is a bad name"
 	exit 1
 fi
-LOG_FILE="ftp_performance.log"
-RESULTS_FILE="ftp_performance.results"
+LOG_FILE="http_performance.log"
+RESULTS_FILE="http_performance.results"
 if [ -f $RESULTS_FILE ]; then
   rm $RESULTS_FILE
 fi
@@ -75,15 +71,15 @@ for size in 1024.data 2048.data 4096.data; do
 			sudo tc qdisc show dev $INTERFACE | tee -a $LOG_FILE
 			echo -n "parameters SIZE=${size} LOSS=${loss} DELAY=${delay} PROTOCOL=IPv4 " >> $LOG_FILE
 			echo " "
-			if ! time wget -4 -a $LOG_FILE ftp://${REMOTE_4_ADDR}/${size}; then
-				echo "wget -4 ftp://${REMOTE_ADDR}/${size} FAILED" | tee -a $LOG_FILE
+			if ! time wget -4 -a $LOG_FILE http://${REMOTE_4_ADDR}/${size}; then
+				echo "wget -4 http://${REMOTE_ADDR}/${size} FAILED" | tee -a $LOG_FILE
 				echo "`date +"%Y-%M-%d %H:%M:%S"`(0.0 KB/s) - ‘${size}’ saved [0]" | tee -a $LOG_FILE
 
 			fi
 			egrep "LOSS=| saved " $LOG_FILE | tail -2 
 			echo -n "parameters SIZE=${size} LOSS=${loss} DELAY=${delay} PROTOCOL=IPv6  " >> $LOG_FILE
-			if ! time wget -6 -a $LOG_FILE ftp://[${REMOTE_6_ADDR}]/${size}; then
-				echo "wget -6 ftp://${REMOTE_ADDR}/${size} FAILED" | tee -a $LOG_FILE
+			if ! time wget -6 -a $LOG_FILE http://[${REMOTE_6_ADDR}]/${size}; then
+				echo "wget -6 http://${REMOTE_ADDR}/${size} FAILED" | tee -a $LOG_FILE
 				echo "`date +"%Y-%M-%d %H:%M:%S"`(0.0 KB/s) - ‘${size}’ saved [0]" | tee -a $LOG_FILE
 			fi
 			echo " "
