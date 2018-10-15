@@ -82,6 +82,7 @@ for size in 1024.data 2048.data; do
 			# See also https://www.cs.unm.edu/~crandall/netsfall13/TCtutorial.pdf
 			sudo tc qdisc replace dev $INTERFACE root netem delay ${delay}ms loss ${loss}% 
 			sudo tc qdisc show dev $INTERFACE | tee -a $LOG_FILE
+			sudo tc qdisc show dev $INTERFACE | tee -a $TIME_FILE
 			echo -n "parameters SIZE=${size} LOSS=${loss} DELAY=${delay} PROTOCOL=IPv4 " >> $LOG_FILE
 			echo -n "parameters SIZE=${size} LOSS=${loss} DELAY=${delay} PROTOCOL=IPv4 " >> $TIME_FILE
 			echo " "
