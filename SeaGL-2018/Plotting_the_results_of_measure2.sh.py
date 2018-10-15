@@ -108,8 +108,8 @@ x = cs.LOSS[ipv4_bool_vec & size_4096_bool_vec]
 y = cs.DELAY[ipv4_bool_vec & size_4096_bool_vec]
 z = cs.bandwidth[ipv4_bool_vec & size_4096_bool_vec]
 scatter_plot(x=x, y=y, z=z, color="r", marker="^",
-             what_we_see='Bandwidth as a function of packet " \
-             "loss rate (%) and delay (msec) for IPv4')
+             what_we_see='Bandwidth as a function of packet ' \
+             'loss rate (%) and delay (msec) for IPv4')
 plt.show()
 
 # Note, IPv6!
@@ -117,8 +117,8 @@ x: pd.Series = cs.LOSS[ipv6_bool_vec & size_4096_bool_vec]
 y: pd.Series = cs.DELAY[ipv6_bool_vec & size_4096_bool_vec]
 z: pd.Series = cs.bandwidth[ipv6_bool_vec & size_4096_bool_vec]
 scatter_plot(x=x, y=y, z=z, color="g", marker="o",
-             what_we_see='Bandwidth as a function of packet " \
-             "loss rate (%) and delay (msec) for IPv6')
+             what_we_see='Bandwidth as a function of packet '
+             'loss rate (%) and delay (msec) for IPv6')
 plt.show()
 
 # In[12]:
@@ -140,8 +140,6 @@ plt.xlabel("PROTOCOL")
 plt.ylabel("Bandwidth Bytes/sec")
 
 # In[15]:
-
-
 plt.plot(cs.SIZE, cs.bandwidth)
 plt.xlabel("SIZE")
 plt.ylabel("Bandwidth Bytes/sec")
