@@ -84,7 +84,7 @@ for size in 1024.data 2048.data 4096.data; do
 # [jeffs@smalldell ~]$ 
 
 
-			if [ delay -eq "0" ]; then delay1="0.00000000001"; else delay1="$delay"; fi
+			if [ delay = "0" ]; then delay1="0.00000000001"; else delay1="$delay"; fi
 			sudo tc qdisc replace dev $INTERFACE root netem delay ${delay1}ms loss ${loss}% 
 			sudo tc qdisc show dev $INTERFACE | tee -a $LOG_FILE
 # Uncomment the next line for debugging the tc command
