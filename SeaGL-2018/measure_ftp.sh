@@ -54,9 +54,10 @@ else
 	echo "HOSTNAME is $HOSTNAME which is a bad name"
 	exit 1
 fi
-LOG_FILE="ftp_performance.log"
-RESULTS_FILE="ftp_performance.results"
-TIME_FILE="ftp_performance.time"
+TIMESTAMP=$(date +%Y%m%d-%H%M)
+LOG_FILE="ftp_performance_$TIMESTAMP.log"
+RESULTS_FILE="ftp_performance_$TIMESTAMP.results"
+TIME_FILE="ftp_performance_$TIMESTAMP.time"
 if [ -f $RESULTS_FILE ]; then
   rm $RESULTS_FILE
 fi
@@ -72,10 +73,10 @@ echo "Remote $REMOTE has IPv4 address $REMOTE_4_ADDR and IPv6 address $REMOTE_6_
 # When adding indices, always make sure that the ordering is such that the most rapidly changing
 # index in the echo commands below is last on the line.
 # for size in 1024.data 2048.data 4096.data; do
-for size in 1024.data 2048.data; do
+for size in 1024.data 2048.data 4096.data; do
 	# There is a bug in tc: it won't handle 0 as a valid delay time.
 #	for loss in  0 10 20 50 75 100; do
-	for loss in  0 10 20 ; do
+	for loss in  0 10 20 50; do
 #		for delay in  0 10.0 20.0 50.0 100.0; do
 		for delay in  0 10.0 20.0; do
 			# See also https://www.cs.unm.edu/~crandall/netsfall13/TCtutorial.pdf
