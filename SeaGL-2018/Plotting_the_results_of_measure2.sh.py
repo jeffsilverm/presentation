@@ -40,7 +40,7 @@ def scatter_plot(x: pd.Series, y: pd.Series, z: pd.Series, color: str,
     ax.scatter(x, y, z, c=color, marker=marker)
 
 
-hd5_filename = "ftp_performance.results.h5"
+hd5_filename = sys.argv[1]
 store = pd.HDFStore(hd5_filename)
 print(store.info())
 print(dir(store))
@@ -125,6 +125,8 @@ scatter_plot(x=x, y=y, z=z, color="r", marker="^",
 plt.show()
 
 # Note, IPv6!
+fig = plt.figure()
+ax = fig.add_subplot(111, projection='3d')
 x: pd.Series = cs.LOSS[ipv6_bool_vec & size_4096_bool_vec]
 y: pd.Series = cs.DELAY[ipv6_bool_vec & size_4096_bool_vec]
 z: pd.Series = cs.bandwidth[ipv6_bool_vec & size_4096_bool_vec]
