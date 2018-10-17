@@ -10,17 +10,18 @@
 import pprint
 import sys
 from typing import Tuple, List
-import numpy as np
 
+import numpy as np
 import pandas as pd
 
 pp = pprint.PrettyPrinter(indent=2, width=80)
 
+
 def parse_line(i: int, line: str, filename: str) -> Tuple:
     """
-
+    :param  i: the line number, used to report errors
     :param line: a line from the time file
-    Need i and filename in case of an error
+    :param filename: str  in case of an error
     :return: a tuple of size (int), loss (float), delay (float),
     protocol (string, either "IPv4" or "IPv6"
     """
@@ -35,7 +36,7 @@ def parse_line(i: int, line: str, filename: str) -> Tuple:
             f"In line {i} of file {filename}, words {words[1]} should begin "
             f"with 'SIZE'")
     size: str = size[1][:-5]  # e.g. 2048.data becomes 2048
-    size: int = int(size)       # pycharm needs that type hint
+    size: int = int(size)  # pycharm needs that type hint
 
     loss: List = words[2].split("=")
     if loss[0] != "LOSS":
@@ -61,8 +62,9 @@ def parse_line(i: int, line: str, filename: str) -> Tuple:
             f"value either 'IPv4' or 'IPv6'"
             f"begin with 'PROTOCOL'")
     elapsed = float(words[5])
-    bandwidth = float(size)/elapsed
+    bandwidth: float = float(size) / elapsed
     return size, loss, delay, protocol, bandwidth
+
 
 def load_data(filename: str) -> Tuple:
     """
@@ -81,8 +83,10 @@ def load_data(filename: str) -> Tuple:
     d3 = dict()
     all_values_list = list()
     for i in range(len(contents)):
-        (size, loss, delay, protocol, bandwidth) = parse_line(i, contents[i],
-                                                              filename)
+        values: Tuple[int, float, float, str, float] = parse_line(i,
+                                                                  contents[i],
+                                                                  filename)
+        (size, loss, delay, protocol, bandwidth) = values
         d3[(size, loss, delay, protocol)] = bandwidth
         all_values_list.append([size, loss, delay, protocol, bandwidth])
 
@@ -92,7 +96,7 @@ def load_data(filename: str) -> Tuple:
 
     np_array = np.array(all_values_list)
 
-    #assert len(parameter_name_list) == len(d3.keys()), \
+    # assert len(parameter_name_list) == len(d3.keys()), \
     #    f"The length of the parameter_name_list, {len(parameter_name_list)}" \
     #    f" is not the same as the length of d3.keys, {len(d3.keys())}."
     mux = pd.MultiIndex.from_tuples(d3.keys(), names=parameter_name_list)
@@ -109,8 +113,8 @@ def load_data(filename: str) -> Tuple:
 if "__main__" == __name__:
     file_name = sys.argv[1]
     df_mi, df_cs = load_data(filename=file_name)
-    print(df_mi)        # MultiIndex
-    print(df_cs)        # 5 column regular DataFrame
+    print(df_mi)  # MultiIndex
+    print(df_cs)  # 5 column regular DataFrame
     output_filename = file_name + '.h5'
     store = pd.HDFStore(output_filename)
     store['df_mi'] = df_mi
