@@ -28,6 +28,7 @@ import pandas as pd
 # noinspection PyShadowingNames
 def scatter_plot(x: pd.Series, y: pd.Series, z: pd.Series, color: str,
                  marker: str = "^", what_we_see: str =None) -> None:
+    raise NotImplemented
     plt.suptitle(what_we_see)
     ax.set_xlabel("Loss %")
     ax.set_ylabel("Delay (msec)")
@@ -40,7 +41,21 @@ def scatter_plot(x: pd.Series, y: pd.Series, z: pd.Series, color: str,
     # matplotlib.axes.Axes.set_xlim
     ax.set_xlim3d(left=xmin, right=xmax)  # Loss rate from 0% to 100%
     ax.set_ylim3d(bottom=ymin, top=ymax)
-    ax.scatter(x, y, z, c=color, marker=marker)
+    # ax.scatter(x, y, z, c=color, marker=marker)
+    # This is from
+    # https://matplotlib.org/gallery/mplot3d/2dcollections3d.html#sphx-glr-gallery-mplot3d-2dcollections3d-py
+    # I then did a proof-of-concept in ~/python/2dcollections3d_a.py
+    ax.plot(x, y, zs=.2, zdir='y', label='curve in (x,y)')
+    y = np.sin(x * 4 * np.pi) / 2 + 0.5
+    ax.plot(x, y, zs=.4, zdir='y', label='curve in (x,y)')
+    y = np.sin(x * 6 * np.pi) / 2 + 0.5
+    ax.plot(x, y, zs=.6, zdir='y', label='curve in (x,y)')
+
+    # I want to create a "stack" of plots, with discrete values of delay
+    for d_msec in y.values:
+        ax.plot(x=x, y=z, zs=d_msec, zdir='z', c=color, marker=marker)
+    # The caller has to call plt.show because the caller might want to add some
+    # more to this plot
 
 
 hd5_filename = sys.argv[1]
@@ -50,6 +65,11 @@ print(dir(store))
 df = store.df_mi
 cs = store.df_cs
 df.rename(columns={0: 'bandwidth'}, inplace="true")
+# This probably is "brittle".  I need the list of delays so that I can make
+# a 3D plot where the loss is continuous and the delays are discrete and "stacked"
+delay_lst = df.index.levels[2].values
+assert df.index.levels[2].name == 'DELAY', \
+    f"df.index.levels[2].name should be 'delay' but is actually {df.index.levels[2].name}"
 cs['bandwidth'] = cs.bandwidth.astype(float)
 cs['SIZE'] = cs.SIZE.astype(int)
 cs['LOSS'] = cs.LOSS.astype(float)
@@ -83,7 +103,7 @@ print(40*'@')
 print(cs.index)
 # print(dir(df))
 print(cs.columns)
-for delay in [0.0, 10.0, 20.0]:
+for delay in delay_lst:
     bv_1_4 = ipv4_bool_vec & (cs.DELAY == delay) & size_4096_bool_vec
     bv_1_6 = ipv6_bool_vec & (cs.DELAY == delay) & size_4096_bool_vec
     print(cs[bv_1_4], "\n", cs[bv_1_6])
@@ -122,21 +142,42 @@ print(f"The type of ax is {type(ax)}", file=sys.stderr)
 x = cs.LOSS[ipv4_bool_vec & size_4096_bool_vec]
 y = cs.DELAY[ipv4_bool_vec & size_4096_bool_vec]
 z = cs.bandwidth[ipv4_bool_vec & size_4096_bool_vec]
-scatter_plot(x=x, y=y, z=z, color="r", marker="^",
-             what_we_see='Bandwidth as a function of packet ' \
+# scatter_plot(x=x, y=y, z=z, color="r", marker="^",
+#             what_we_see='Bandwidth as a function of packet ' \
+#             'loss rate (%) and delay (msec) for IPv4')
+plt.suptitle('Bandwidth as a function of packet '
              'loss rate (%) and delay (msec) for IPv4')
+ax.set_xlabel("Loss %")
+ax.set_ylabel("Delay (msec)")
+ax.set_zlabel("Bandwidth (bytes/sec")
+xmin: float = x.min()
+xmax: float = x.max()
+ymin: float = y.min()
+ymax: float = y.max()
+# https://matplotlib.org/api/_as_gen/matplotlib.axes.Axes.set_xlim.html
+# matplotlib.axes.Axes.set_xlim
+ax.set_xlim3d(left=xmin, right=xmax)  # Loss rate from 0% to 100%
+ax.set_ylim3d(bottom=ymin, top=ymax)
+# ax.scatter(x, y, z, c=color, marker=marker)
+# This is from
+# https://matplotlib.org/gallery/mplot3d/2dcollections3d.html#sphx-glr-gallery-mplot3d-2dcollections3d-py
+# I then did a proof-of-concept in ~/python/2dcollections3d_a.py
+for delay in delay_lst:
+    # The y=z looks strange.  However, we're stacking in that
+    ax.plot(x=x, z=z, ys=delay, zdir='y', label=f'delay in {delay} msec')
 plt.show()
 
 # Note, IPv6!
-fig = plt.figure()
-ax = fig.add_subplot(111, projection='3d')
-x: pd.Series = cs.LOSS[ipv6_bool_vec & size_4096_bool_vec]
-y: pd.Series = cs.DELAY[ipv6_bool_vec & size_4096_bool_vec]
-z: pd.Series = cs.bandwidth[ipv6_bool_vec & size_4096_bool_vec]
-scatter_plot(x=x, y=y, z=z, color="g", marker="o",
-             what_we_see='Bandwidth as a function of packet '
-             'loss rate (%) and delay (msec) for IPv6')
-plt.show()
+if False:
+    fig = plt.figure()
+    ax = fig.add_subplot(111, projection='3d')
+    x: pd.Series = cs.LOSS[ipv6_bool_vec & size_4096_bool_vec]
+    y: pd.Series = cs.DELAY[ipv6_bool_vec & size_4096_bool_vec]
+    z: pd.Series = cs.bandwidth[ipv6_bool_vec & size_4096_bool_vec]
+    scatter_plot(x=x, y=y, z=z, color="g", marker="o",
+                 what_we_see='Bandwidth as a function of packet '
+                 'loss rate (%) and delay (msec) for IPv6')
+    plt.show()
 
 # In[12]:
 plt.plot(cs.LOSS[(cs['PROTOCOL'] == 'IPv4')],
