@@ -29,6 +29,9 @@ import pandas as pd
 def scatter_plot(x: pd.Series, y: pd.Series, z: pd.Series, color: str,
                  marker: str = "^", what_we_see: str =None) -> None:
     plt.suptitle(what_we_see)
+    ax.set_xlabel("Loss %")
+    ax.set_ylabel("Delay (msec)")
+    ax.set_zlabel("Bandwidth (bytes/sec")
     xmin: float = x.min()
     xmax: float = x.max()
     ymin: float = y.min()
