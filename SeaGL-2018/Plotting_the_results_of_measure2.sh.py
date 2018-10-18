@@ -4,7 +4,6 @@
 # In[17]:
 
 
-import pandas as pd
 # From http://pandas.pydata.org/pandas-docs/version/0.23/visualization.html
 # http://pandas.pydata.org/pandas-docs/version/0.23/visualization.html
 # #scatter-matrix-plot
@@ -14,20 +13,19 @@ import pandas as pd
 # X-Windows to make something that will rotate dynamically
 import sys
 
-import matplotlib
-import matplotlib.pyplot as plt
-# This import registers the 3D projection, but is otherwise unused.
-# noinspection PyUnresolvedReferences
-from mpl_toolkits.mplot3d import axes3d, Axes3D  # <--Note the capitalization
 import matplotlib.figure
+import matplotlib.pyplot as plt
 # from pandas.plotting import scatter_matrix
 import numpy as np
 import pandas as pd
+# This import registers the 3D projection, but is otherwise unused.
+# noinspection PyUnresolvedReferences
+from mpl_toolkits.mplot3d import axes3d, Axes3D  # <--Note the capitalization
 
 
 # noinspection PyShadowingNames
 def scatter_plot(x: pd.Series, y: pd.Series, z: pd.Series, color: str,
-                 marker: str = "^", what_we_see: str =None) -> None:
+                 marker: str = "^", what_we_see: str = None) -> None:
     plt.suptitle(what_we_see)
     ax.set_xlabel("Loss %")
     ax.set_ylabel("Delay (msec)")
@@ -65,12 +63,10 @@ size_4096_bool_vec = cs['SIZE'] == 4096
 print(df.columns)
 print(cs.columns)
 
-
 # In[18]:
 
-
 print(df.info())
-print(40*'6')
+print(40 * '6')
 print(df.index)
 # print(dir(df))
 print(df.columns)
@@ -79,7 +75,7 @@ print(df.columns)
 
 
 print(cs.info())
-print(40*'@')
+print(40 * '@')
 print(cs.index)
 # print(dir(df))
 print(cs.columns)
@@ -110,7 +106,8 @@ assert isinstance(fig, matplotlib.figure.Figure), \
 ax = fig.add_subplot(111, projection='3d')
 print(f"The type of ax is {type(ax)}", file=sys.stderr)
 # The following statement was taken ot because it kept raising the
-# AttributeError: module 'matplotlib.axes._subplots' has no attribute 'Axes3DSubplot'
+# AttributeError: module 'matplotlib.axes._subplots' has no attribute
+# 'Axes3DSubplot'
 # But the preceeding statement prints:
 # The type of ax is <class 'matplotlib.axes._subplots.Axes3DSubplot'>
 # noinspection PyUnresolvedReferences,PyProtectedMember
@@ -123,19 +120,52 @@ x = cs.LOSS[ipv4_bool_vec & size_4096_bool_vec]
 y = cs.DELAY[ipv4_bool_vec & size_4096_bool_vec]
 z = cs.bandwidth[ipv4_bool_vec & size_4096_bool_vec]
 scatter_plot(x=x, y=y, z=z, color="r", marker="^",
-             what_we_see='Bandwidth as a function of packet ' \
-             'loss rate (%) and delay (msec) for IPv4')
+             what_we_see='Bandwidth as a function of packet ' 
+                         'loss rate (%) and delay (msec) for IPv4')
 plt.show()
 
 # Note, IPv6!
 fig = plt.figure()
+# The print call above says that the type of object returned by
+# fig.add_subplot is matplotlib.axes._subplots.Axes3DSubplot
+#
+# But when I use  as a type annotation for ax, python3 raises an
+# AttributeError Exception Look at file
+# /usr/local/lib/python3.6/dist-packages/matplotlib/axes/_subplots.py . Look at
+#  file /usr/local/lib/python3.6/dist-packages/matplotlib/figure.py .  I finally
+#  did: fgrep -r "Axes3DSubplot"
+# /usr/local/lib/python3.6/dist-packages/matplotlib/* and found nothing.  So
+# I don't know how this was done, but it was.  Take away is don't do type
+# hint for the result of fig.add_subplot() ax is used, actually, but it is
+# hidden and that's not pythonic noinspection PyUnusedLocal
 ax = fig.add_subplot(111, projection='3d')
 x: pd.Series = cs.LOSS[ipv6_bool_vec & size_4096_bool_vec]
 y: pd.Series = cs.DELAY[ipv6_bool_vec & size_4096_bool_vec]
 z: pd.Series = cs.bandwidth[ipv6_bool_vec & size_4096_bool_vec]
 scatter_plot(x=x, y=y, z=z, color="g", marker="o",
              what_we_see='Bandwidth as a function of packet '
-             'loss rate (%) and delay (msec) for IPv6')
+                         'loss rate (%) and delay (msec) for IPv6')
+plt.show()
+
+fig = plt.figure()
+# To see the difference between add_subplot and subplots, see
+# https://stackoverflow.com/questions/3584805/in-matplotlib-what-does-the-argument-mean-in-fig-add-subplot111
+# The assert is here because:
+# (Pdb) w3=fig.add_subplot(nrows=1, ncols=1, sharex=True, sharey=True, projection='3d')
+# (Pdb) w3 is None
+ax = fig.add_subplot(111, projection='3d')
+assert ax is not None, "ax is None"
+x: pd.Series = cs.LOSS[ipv6_bool_vec & size_4096_bool_vec]
+y: pd.Series = cs.DELAY[ipv6_bool_vec & size_4096_bool_vec]
+z4: pd.Series = cs.bandwidth[ipv4_bool_vec & size_4096_bool_vec]
+z6: pd.Series = cs.bandwidth[ipv6_bool_vec & size_4096_bool_vec]
+scatter_plot(x=x, y=y, z=z4, color="g", marker="o",
+             what_we_see='Bandwidth as a function of packet '
+                         'loss rate (%) and delay (msec) for IPv4')
+scatter_plot(x=x, y=y, z=z6, color="g", marker="o",
+             what_we_see='Bandwidth as a function of packet '
+                         'loss rate (%) and delay (msec) for IPv6')
+
 plt.show()
 
 # In[12]:

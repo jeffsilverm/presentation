@@ -18,12 +18,14 @@ pp = pprint.PrettyPrinter(indent=2, width=80)
 
 
 def parse_line(i: int, line: str, filename: str) -> Tuple:
+    # noinspection PyStatementEffect
     """
-    :param  i: the line number, used to report errors
-    :param line: a line from the time file
-    :param filename: str  in case of an error
-    :return: a tuple of size (int), loss (float), delay (float),
-    protocol (string, either "IPv4" or "IPv6"
+        :rtype: Tuple
+        :param  i: the line number, used to report errors
+        :param line: a line from the time file
+        :param filename: str  in case of an error
+        :return: a tuple of size (int), loss (float), delay (float),
+        protocol (string, either "IPv4" or "IPv6", or service
     """
     words = line.split()
     if words[0] != "parameters":
@@ -61,14 +63,21 @@ def parse_line(i: int, line: str, filename: str) -> Tuple:
             f"In line {i} of file {filename}, words {words[4]} should have "
             f"value either 'IPv4' or 'IPv6'"
             f"begin with 'PROTOCOL'")
-    elapsed = float(words[5])
+    service: List = words[5].split("=")
+    if service[0] != "SERVICE":
+        raise ValueError(
+            f"In line {i} of file {filename}, words {words[5]} should begin "
+            f"with 'SERVICE'")
+    service: str = service[1]
+    elapsed = float(words[6])
     bandwidth: float = float(size) / elapsed
-    return size, loss, delay, protocol, bandwidth
+    return size, loss, delay, protocol, service, bandwidth
 
 
 def load_data(filename: str) -> Tuple:
     """
 
+    :type filename: Tuple
     :param filename: A string which is the name of the file that contains the
     data
     :return: A tuple.  The first element is a list of indexes.  The second
@@ -83,15 +92,17 @@ def load_data(filename: str) -> Tuple:
     d3 = dict()
     all_values_list = list()
     for i in range(len(contents)):
-        values: Tuple[int, float, float, str, float] = parse_line(i,
-                                                                  contents[i],
-                                                                  filename)
-        (size, loss, delay, protocol, bandwidth) = values
-        d3[(size, loss, delay, protocol)] = bandwidth
-        all_values_list.append([size, loss, delay, protocol, bandwidth])
+        values: Tuple[int, float, float, str, str, float] = \
+            parse_line(i, contents[i], filename)
+        bandwidth: float
+        (size, loss, delay, protocol, service, bandwidth) = values
+        d3[(size, loss, delay, protocol, service)] = bandwidth
+        all_values_list.append([size, loss, delay, protocol, service,
+                                bandwidth])
 
     # Just a list of the independent variables
-    parameter_name_list = ['SIZE', 'LOSS', 'DELAY', 'PROTOCOL']
+    # This is brittle, should get the names of the services from the file
+    parameter_name_list = ['SIZE', 'LOSS', 'DELAY', 'PROTOCOL', 'SERVICE']
     values_list = list(d3.values())
 
     np_array = np.array(all_values_list)

@@ -76,19 +76,23 @@ def load_data(filename: str) -> Tuple:
                 assert value == "IPv4" or value == "IPv6", \
                     f"value is {value} and should be either IPv4 or IPv6, " \
                     f"i={i}, contents[{i}]=\n{contents[i]}"
+            elif key == "SERVICE":
+                # value needs no further processing, I assume new services
+                # will be added in the future
+                pass
             elif key in ["LOSS", "DELAY", "bandwidth"]:
                 value = float(value)
             else:
                 raise ValueError(
                     f"key is {key} but it should be one of LOSS, DELAY, "
-                    f"PROTOCOL or BANDWIDTH")
+                    f"PROTOCOL, SERVICE or BANDWIDTH")
             parameter_name_list.append(key)  # The key
             parameter_value_list.append(value)  # The value
         dict_key_tuple = tuple(parameter_value_list)
         # There will be one match in this line, but it won't be at the start
         # of the line
         mo = [None, None]
-        assert len(dict_key_tuple) == 4, f"Length of dict_key_tuple is " \
+        assert len(dict_key_tuple) == 5, f"Length of dict_key_tuple is " \
                                          f"{len(dict_key_tuple)}, i is {i}, " \
                                          f"contents[{i}] is {contents[i]}"
         # This might happen if we run results2MultiIndex.py on a results file
