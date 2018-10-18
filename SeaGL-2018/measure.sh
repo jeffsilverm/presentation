@@ -4,6 +4,16 @@
 # down load files for different combinations of packet loss
 # rate, network delay, and file size.
 
+gracefulExit() {
+      echo "exiting, but first delete the queing discipline"
+      sudo tc qdisc delete dev $INTERFACE root netem
+      echo "Now, just die"
+      exit 1
+}
+
+trap gracefulExit INT
+
+
 network_em() {
   command=$1	# add, change, remove
   P=$2
@@ -20,6 +30,44 @@ network_em() {
   elif [ "X${command}" = "Xchange" ]; then
     sudo 
   fi
+}
+
+xfer() {
+	SERVICE=$1
+	PROTOCOL=$2
+	delay=$3
+	loss=$4
+	size=$5
+	REMOTE_ADDR=$6
+	REM_USER=$7
+	DOCUMENT_COMMENT="parameters SIZE=${size} LOSS=${loss} DELAY=${delay} PROTOCOL=${PROTOCOL} SERVICE=${SERVICE} "
+#			echo -n "parameters SIZE=${size} LOSS=${loss} DELAY=${delay} PROTOCOL=IPv4 SERVICE=HTTP " >> $LOG_FILE
+#			echo -n "parameters SIZE=${size} LOSS=${loss} DELAY=${delay} PROTOCOL=IPv4 SERVICE=HTTP " >> $TIME_FILE
+#			echo " "
+#			if ! /usr/bin/time -a -o $TIME_FILE -f "%e (sec) elapsed" wget -4 -a $LOG_FILE http://${REMOTE_4_ADDR}/${size}; then
+#				echo "wget -4 http://${REMOTE_ADDR}/${size} FAILED" | tee -a $LOG_FILE
+#				echo "`date +"%Y-%M-%d %H:%M:%S"`(0.0 KB/s) - ‘${size}’ saved [0] wget FAILS" | tee -a $LOG_FILE
+#			fi
+#			egrep "LOSS=| saved " $LOG_FILE | tail -2 
+#
+	# There is a bug in tc: it won't handle 0 as a valid delay time.
+#
+	if [ $PROTOCOL = "IPv4" ]; then SWITCH="-4"; else SWITCH="-6"; fi
+# Handle all aspects of a file transfer
+	echo -n  $DOCUMENT_COMMENT >> $LOG_FILE
+	echo -n  $DOCUMENT_COMMENT >> $TIME_FILE
+	if [ $SERVICE = "SCP" ]; then
+		EXECUTE_COMMAND="scp $SWITCH ${REM_USER}@${REMOTE_ADDR}:${size}  ."
+	else
+		EXECUTE_COMMAND="wget --no-check-certificate $SWITCH -a $LOG_FILE ${SERVICE}://${REMOTE_ADDR}/${size}"
+	fi
+	if ! /usr/bin/time -a -o $TIME_FILE -f "%e  (sec) elapsed" $EXECUTE_COMMAND; then
+		echo "$EXECUTE_COMMAND  FAILED" | tee -a $LOG_FILE
+		echo "`date +"%Y-%M-%d %H:%M:%S"`(0.0 KB/s) - $SIZE saved [0] wget FAILS" | tee -a $LOG_FILE
+	fi
+	# FOr the human monitoring the script
+	egrep "LOSS=| saved " $LOG_FILE | tail -2
+
 }
 
 
@@ -44,6 +92,8 @@ else
 	REMOTE_6S=($REMOTE_6)
 	REMOTE_6_ADDR=${REMOTE_6S[4]}
 fi
+REMOTE_ADDR="www.commercialventvac.com"
+REM_USER="jha"
 if [ "X${HOSTNAME}" = "Xjeffs-desktop" ] ; then
 	# Get rid of a local idiosyncrasy of mine that happens to really break the results file
 	unalias egrep
@@ -73,116 +123,33 @@ echo "Remote $REMOTE has IPv4 address $REMOTE_4_ADDR and IPv6 address $REMOTE_6_
 # When adding indices, always make sure that the ordering is such that the most rapidly changing
 # index in the echo commands below is last on the line.
 # for size in 1024.data 2048.data 4096.data; do
-for size in 1024.data 2048.data 4096.data 8192.data 65536.data 131072.data; do
-#for size in 2048.data 4096.data ; do
-	# There is a bug in tc: it won't handle 0 as a valid delay time.
-	for loss in  0 10 20 50 75 90; do
-#	for loss in  0 10 20 50; do
-#		for delay in  0 10.0 20.0 ; do
-		for delay in  0 10.0 20.0 50.0 100.0 200.0 500.0 1000.0; do
+#for size in 1024.data 2048.data 4096.data 8192.data 65536.data 131072.data; do
+for size in 2048.data 4096.data ; do
+#	for loss in  0 10 20 50 75 90; do
+	for loss in  0 10 20 50; do
+		for delay in  0 10.0 20.0 ; do
+#		for delay in  0 10.0 20.0 50.0 100.0 200.0 500.0 1000.0; do
 			# See also https://www.cs.unm.edu/~crandall/netsfall13/TCtutorial.pdf
 			# There is a bug in the tc: it won't accept 0 as a value for loss (see end of this file for details)
-# [jeffs@smalldell ~]$ 
-
-
 			if [ $loss = "0" ]; then loss1="0.00000000001"; else loss="$loss"; fi
 			sudo tc qdisc replace dev $INTERFACE root netem delay ${delay}ms loss ${loss1}% 
 			sudo tc qdisc show dev $INTERFACE | tee -a $LOG_FILE
 # Uncomment the next line for debugging the tc command
 #			sudo tc qdisc show dev $INTERFACE >> $TIME_FILE
-			echo -n "parameters SIZE=${size} LOSS=${loss} DELAY=${delay} PROTOCOL=IPv4 SERVICE=HTTP " >> $LOG_FILE
-			echo -n "parameters SIZE=${size} LOSS=${loss} DELAY=${delay} PROTOCOL=IPv4 SERVICE=HTTP " >> $TIME_FILE
-			echo " "
-			if ! /usr/bin/time -a -o $TIME_FILE -f "%e (sec) elapsed" wget -4 -a $LOG_FILE http://${REMOTE_4_ADDR}/${size}; then
-				echo "wget -4 http://${REMOTE_ADDR}/${size} FAILED" | tee -a $LOG_FILE
-				echo "`date +"%Y-%M-%d %H:%M:%S"`(0.0 KB/s) - ‘${size}’ saved [0] wget FAILS" | tee -a $LOG_FILE
-
-			fi
-			egrep "LOSS=| saved " $LOG_FILE | tail -2 
-###############################
-			echo -n "parameters SIZE=${size} LOSS=${loss} DELAY=${delay} PROTOCOL=IPv6 SERVICE=HTTP " >> $LOG_FILE
-			echo -n "parameters SIZE=${size} LOSS=${loss} DELAY=${delay} PROTOCOL=IPv6 SERVICE=HTTP " >> $TIME_FILE
-			if ! /usr/bin/time -a -o $TIME_FILE -f "%e (sec) elapsed" wget -6 -a $LOG_FILE http://[${REMOTE_6_ADDR}]/${size}; then
-				echo "wget -6 http://${REMOTE_ADDR}/${size} FAILED" | tee -a $LOG_FILE
-				echo "`date +"%Y-%M-%d %H:%M:%S"`(0.0 KB/s) - ‘${size}’ saved [0] wget FAILS" | tee -a $LOG_FILE
-			fi
-			echo " "
-			echo -n "parameters SIZE=${size} LOSS=${loss} DELAY=${delay} PROTOCOL=IPv4 SERVICE=HTTPS " >> $LOG_FILE
-                        echo -n "parameters SIZE=${size} LOSS=${loss} DELAY=${delay} PROTOCOL=IPv4 SERVICE=HTTPS " >> $TIME_FILE
-                        if ! /usr/bin/time -a -o $TIME_FILE -f "%e (sec) elapsed" wget --no-check-certificate -4 -a $LOG_FILE https://${REMOTE_4_ADDR}/${size}; then
-                                echo "wget --no-check-certificate -4 https://${REMOTE_ADDR}/${size} FAILED" | tee -a $LOG_FILE
-                                echo "`date +"%Y-%M-%d %H:%M:%S"`(0.0 KB/s) - ‘${size}’ saved [0] wget FAILS" | tee -a $LOG_FILE
-
-                        fi
-                        egrep "LOSS=| saved " $LOG_FILE | tail -2
-###############################
-                        echo -n "parameters SIZE=${size} LOSS=${loss} DELAY=${delay} PROTOCOL=IPv6 SERVICE=HTTPS " >> $LOG_FILE
-                        echo -n "parameters SIZE=${size} LOSS=${loss} DELAY=${delay} PROTOCOL=IPv6 SERVICE=HTTPS " >> $TIME_FILE
-                        if ! /usr/bin/time -a -o $TIME_FILE -f "%e (sec) elapsed" wget --no-check-certificate -6 -a $LOG_FILE https://[${REMOTE_6_ADDR}]/${size}; then
-                                echo "wget --no-check-certificate -6 https://${REMOTE_ADDR}/${size} FAILED" | tee -a $LOG_FILE
-                                echo "`date +"%Y-%M-%d %H:%M:%S"`(0.0 KB/s) - ‘${size}’ saved [0] wget FAILS" | tee -a $LOG_FILE
-                        fi
-                        echo " "
-			egrep "LOSS=| saved " $LOG_FILE | tail -2 
-###############################
-#			echo -n "parameters SIZE=${size} LOSS=${loss} DELAY=${delay} PROTOCOL=IPv4 SERVICE=SCP " >> $LOG_FILE
-#			echo -n "parameters SIZE=${size} LOSS=${loss} DELAY=${delay} PROTOCOL=IPv4 SERVICE=SCP " >> $TIME_FILE
-#			if ! /usr/bin/time -a -o $TIME_FILE -f "%e (sec) elapsed" scp -4 ${REMOTE_4_ADDR}:${size} .; then
-#				echo "wget -4 scp [${REMOTE_ADDR}]:${size} . FAILED" | tee -a $LOG_FILE
-#				echo "`date +"%Y-%M-%d %H:%M:%S"`(0.0 KB/s) - ‘${size}’ saved [0] scp FAILS" | tee -a $LOG_FILE
-#			fi
-#			egrep "LOSS=| saved " $LOG_FILE | tail -2
-###############################
-#			echo " "
-#			echo -n "parameters SIZE=${size} LOSS=${loss} DELAY=${delay} PROTOCOL=IPv6 SERVICE=SCP " >> $LOG_FILE
-#			echo -n "parameters SIZE=${size} LOSS=${loss} DELAY=${delay} PROTOCOL=IPv6 SERVICE=SCP " >> $TIME_FILE
-#			if ! /usr/bin/time -a -o $TIME_FILE -f "%e (sec) elapsed" scp -6 [${REMOTE_6_ADDR}]:${size} .; then
-#				echo "wget -6 scp [${REMOTE_ADDR}]:${size} .  FAILED" | tee -a $LOG_FILE
-#				echo "`date +"%Y-%M-%d %H:%M:%S"`(0.0 KB/s) - ‘${size}’ saved [0] scp FAILS" | tee -a $LOG_FILE
-#			fi
-#                        egrep "LOSS=| saved " $LOG_FILE | tail -2
-###############################
-			echo " "
-			echo -n "parameters SIZE=${size} LOSS=${loss} DELAY=${delay} PROTOCOL=IPv4 SERVICE=FTP " >> $LOG_FILE
-			echo -n "parameters SIZE=${size} LOSS=${loss} DELAY=${delay} PROTOCOL=IPv4 SERVICE=FTP " >> $TIME_FILE
-			if ! /usr/bin/time -a -o $TIME_FILE -f "%e (sec) elapsed" wget --no-check-certificate -4 -a $LOG_FILE ftp://${REMOTE_4_ADDR}/${size} ; then
-				echo "wget --no-check-certificate -4 -a $LOG_FILE ftp://${REMOTE_4_ADDR}/${size} FAILED" | tee -a $LOG_FILE
-				echo "`date +"%Y-%M-%d %H:%M:%S"`(0.0 KB/s) - ‘${size}’ saved [0] ftp FAILS" | tee -a $LOG_FILE
-			fi
-                        egrep "LOSS=| saved " $LOG_FILE | tail -2
-###############################
-			echo " "
-			echo -n "parameters SIZE=${size} LOSS=${loss} DELAY=${delay} PROTOCOL=IPv6 SERVICE=FTP " >> $LOG_FILE
-			echo -n "parameters SIZE=${size} LOSS=${loss} DELAY=${delay} PROTOCOL=IPv6 SERVICE=FTP " >> $TIME_FILE
-			if ! /usr/bin/time -a -o $TIME_FILE -f "%e (sec) elapsed" wget --no-check-certificate -6 -a $LOG_FILE ftp://[${REMOTE_6_ADDR}]/${size} ; then
-				echo "wget --no-check-certificate -6 -a $LOG_FILE ftp://[${REMOTE_6_ADDR}]/${size}" | tee -a $LOG_FILE
-                                echo "`date +"%Y-%M-%d %H:%M:%S"`(0.0 KB/s) - ‘${size}’ saved [0] ftp FAILS" | tee -a $LOG_FILE
-                        fi
-                        egrep "LOSS=| saved " $LOG_FILE | tail -2
-###############################
-			echo " "
-			echo -n "parameters SIZE=${size} LOSS=${loss} DELAY=${delay} PROTOCOL=IPv4 SERVICE=FTPS " >> $LOG_FILE
-			echo -n "parameters SIZE=${size} LOSS=${loss} DELAY=${delay} PROTOCOL=IPv4 SERVICE=FTPS " >> $TIME_FILE
-			if ! /usr/bin/time -a -o $TIME_FILE -f "%e (sec) elapsed" wget --no-check-certificate -4 -a $LOG_FILE ftps://${REMOTE_4_ADDR}/${size} ; then
-				echo "wget --no-check-certificate -4 -a $LOG_FILE ftps://${REMOTE_4_ADDR}/${size} FAILED" | tee -a $LOG_FILE
-				echo "`date +"%Y-%M-%d %H:%M:%S"`(0.0 KB/s) - ‘${size}’ saved [0] ftps FAILS" | tee -a $LOG_FILE
-			fi
-                        egrep "LOSS=| saved " $LOG_FILE | tail -2
-###############################
-			echo " "
-			echo -n "parameters SIZE=${size} LOSS=${loss} DELAY=${delay} PROTOCOL=IPv6 SERVICE=FTPS " >> $LOG_FILE
-			echo -n "parameters SIZE=${size} LOSS=${loss} DELAY=${delay} PROTOCOL=IPv6 SERVICE=FTPS " >> $TIME_FILE
-			if ! /usr/bin/time -a -o $TIME_FILE -f "%e (sec) elapsed" wget --no-check-certificate  -6 -a $LOG_FILE ftps://[${REMOTE_6_ADDR}]/${size} ; then
-				echo "wget --no-check-certificate  -6 -a $LOG_FILE ftps://[${REMOTE_6_ADDR}]/${size}" | tee -a $LOG_FILE
-                                echo "`date +"%Y-%M-%d %H:%M:%S"`(0.0 KB/s) - ‘${size}’ saved [0] ftps FAILS" | tee -a $LOG_FILE
-                        fi
-                        egrep "LOSS=| saved " $LOG_FILE | tail -2
-###############################
-
-			date; egrep "LOSS=| saved " $LOG_FILE | tail -4
-		done
-	done
-done
+			for SERVICE in HTTP HTTPS FTP FTPS SCP; do
+				for PROTOCOL in "IPv4" "IPv6"; do
+#	SERVICE=$1
+#	PROTOCOL=$2
+#	delay=$3
+#	loss=$4
+#	size=$5
+#	REMOTE_ADDR=$6
+					xfer $SERVICE $PROTOCOL $delay $loss $size $REMOTE_ADDR $REM_USER
+				done	# PROTOCOL
+			done	# SERVICE
+		done	# DELAY
+	done	# LOSS
+done	#SIZE
 rm *.data
 # Clean up - remove the classless qdisc
 sudo tc qdisc delete dev $INTERFACE root netem
