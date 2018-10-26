@@ -28,7 +28,7 @@ def parse_line(i: int, line: str, filename: str) -> Tuple:
         protocol (string, either "IPv4" or "IPv6", or service
     """
     words = line.split()
-    if words[0] != "parameters":
+    if words[0] != "parametersV2":
         raise ValueError(
             f"In line {i} of file {filename}, words {words[0]} should be "
             f"'parameters'")

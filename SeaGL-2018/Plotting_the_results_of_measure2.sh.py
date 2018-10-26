@@ -1,9 +1,5 @@
 #! /usr/bin/python3
 # coding: utf-8
-
-# In[17]:
-
-
 # From http://pandas.pydata.org/pandas-docs/version/0.23/visualization.html
 # http://pandas.pydata.org/pandas-docs/version/0.23/visualization.html
 # #scatter-matrix-plot
@@ -11,10 +7,10 @@
 # This does NOT work in a jupyter notebook but does when run from the command
 # line.  The reason is that the web sends an PNG file, but the command line uses
 # X-Windows to make something that will rotate dynamically
-import sys
-
 import matplotlib.figure
 import matplotlib.pyplot as plt
+import sys
+
 # from pandas.plotting import scatter_matrix
 import numpy as np
 import pandas as pd
