@@ -5,14 +5,9 @@
     <option name="CUSTOM_SCOPE_NAME" value="Current File" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="aa93e885-664d-4342-af57-438185dc3490" name="Default Changelist" comment="Changed list of delays and list of loss percents, changed logging&#10;&#10;Now, instead of using tee, I am fgrepping the log file as it is made&#10;and then displaying the last two lines.  This should give a better&#10;handle on the status of the run">
-      <change afterPath="$PROJECT_DIR$/network_stats.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/SeaGL-2018.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/SeaGL-2018.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
+    <list default="true" id="aa93e885-664d-4342-af57-438185dc3490" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Plotting_the_results_of_measure2.sh.py" beforeDir="false" afterPath="$PROJECT_DIR$/Plotting_the_results_of_measure2.sh.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/time2MultIindex.py" beforeDir="false" afterPath="$PROJECT_DIR$/time2MultIindex.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/network_stats.py" beforeDir="false" afterPath="$PROJECT_DIR$/network_stats.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -22,6 +17,7 @@
   </component>
   <component name="CoverageDataManager">
     <SUITE FILE_PATH="coverage/SeaGL_2018$Plotting_the_results_of_measure2_sh.coverage" NAME="Plotting_the_results_of_measure2.sh Coverage Results" MODIFIED="1539777331776" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/SeaGL_2018$network_stats.coverage" NAME="network_stats Coverage Results" MODIFIED="1540536368515" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/SeaGL_2018$results2MultiIndex.coverage" NAME="results2MultiIndex Coverage Results" MODIFIED="1539070891979" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/SeaGL_2018$time2MultIindex.coverage" NAME="time2MultIindex Coverage Results" MODIFIED="1539734494887" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
@@ -29,18 +25,19 @@
     <session id="-1331518775">
       <usages-collector id="statistics.lifecycle.project">
         <counts>
-          <entry key="project.closed" value="17" />
+          <entry key="project.closed" value="18" />
           <entry key="project.open.time.0" value="1" />
           <entry key="project.open.time.2" value="1" />
-          <entry key="project.open.time.4" value="8" />
+          <entry key="project.open.time.4" value="9" />
           <entry key="project.open.time.5" value="8" />
           <entry key="project.open.time.6" value="1" />
-          <entry key="project.opened" value="19" />
+          <entry key="project.opened" value="20" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.open">
         <counts>
-          <entry key="py" value="16" />
+          <entry key="pstat" value="2" />
+          <entry key="py" value="29" />
           <entry key="sh" value="5" />
           <entry key="txt" value="1" />
         </counts>
@@ -49,23 +46,24 @@
         <counts>
           <entry key="Python Console" value="7" />
           <entry key="dummy" value="2" />
-          <entry key="py" value="16502" />
+          <entry key="py" value="18100" />
           <entry key="sh" value="151" />
-          <entry key="txt" value="1282" />
+          <entry key="txt" value="1316" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.edit">
         <counts>
           <entry key="Bash" value="75" />
-          <entry key="PLAIN_TEXT" value="1284" />
-          <entry key="Python" value="16585" />
+          <entry key="PLAIN_TEXT" value="1318" />
+          <entry key="Python" value="18183" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.open">
         <counts>
           <entry key="Bash" value="4" />
           <entry key="PLAIN_TEXT" value="2" />
-          <entry key="Python" value="16" />
+          <entry key="Profiler Session" value="2" />
+          <entry key="Python" value="29" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.js.language.service.starts" />
@@ -81,12 +79,12 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/network_stats.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="286">
-              <caret line="53" column="54" selection-start-line="53" selection-start-column="54" selection-end-line="53" selection-end-column="54" />
+            <state relative-caret-position="614">
+              <caret line="69" column="83" selection-start-line="69" selection-start-column="83" selection-end-line="69" selection-end-column="83" />
               <folding>
                 <element signature="e#100#116#0" expanded="true" />
-                <marker date="1540515395607" expanded="true" signature="284:289" ph="..." />
-                <marker date="1540515395607" expanded="true" signature="636:1614" ph="..." />
+                <marker date="1540539450091" expanded="true" signature="284:289" ph="..." />
+                <marker date="1540539450091" expanded="true" signature="1083:1625" ph="..." />
               </folding>
             </state>
           </provider>
@@ -112,6 +110,7 @@
       <find>Axes</find>
       <find>PROTOCOL</find>
       <find>but it should be one of</find>
+      <find>open</find>
     </findStrings>
     <replaceStrings>
       <replace>http</replace>
@@ -145,9 +144,9 @@
     <sorting>DEFINITION_ORDER</sorting>
   </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="1616" />
-    <option name="y" value="35" />
-    <option name="width" value="1511" />
+    <option name="x" value="1579" />
+    <option name="y" value="28" />
+    <option name="width" value="1630" />
     <option name="height" value="1047" />
   </component>
   <component name="ProjectInspectionProfilesVisibleTreeState">
@@ -155,10 +154,13 @@
       <profile-state>
         <expanded-state>
           <State />
+          <State>
+            <id>Python</id>
+          </State>
         </expanded-state>
         <selected-state>
           <State>
-            <id>Angular</id>
+            <id>PyShadowingNamesInspection</id>
           </State>
         </selected-state>
       </profile-state>
@@ -190,7 +192,7 @@
     <property name="nodejs_interpreter_path.stuck_in_default_project" value="undefined stuck path" />
     <property name="nodejs_npm_path_reset_for_default_project" value="true" />
     <property name="run.code.analysis.last.selected.profile" value="pProject Default" />
-    <property name="settings.editor.selected.configurable" value="configurable.group.project" />
+    <property name="settings.editor.selected.configurable" value="preferences.sourceCode" />
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
@@ -209,7 +211,7 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="Python.Plotting_the_results_of_measure2.sh">
+  <component name="RunManager" selected="Python.network_stats">
     <configuration name="Plotting_the_results_of_measure2.sh" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <module name="SeaGL-2018" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -249,6 +251,25 @@
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="true" />
       <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="network_stats" type="PythonConfigurationType" factoryName="Python" temporary="true">
+      <module name="SeaGL-2018" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/network_stats.py" />
+      <option name="PARAMETERS" value="commercialventvac.com 4000 -6" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="true" />
       <option name="MODULE_MODE" value="false" />
       <option name="REDIRECT_INPUT" value="false" />
       <option name="INPUT_FILE" value="" />
@@ -302,9 +323,11 @@
       <item itemvalue="Python.results2MultiIndex" />
       <item itemvalue="Python.Plotting_the_results_of_measure2.sh" />
       <item itemvalue="Python.time2MultIindex" />
+      <item itemvalue="Python.network_stats" />
     </list>
     <recent_temporary>
       <list>
+        <item itemvalue="Python.network_stats" />
         <item itemvalue="Python.Plotting_the_results_of_measure2.sh" />
         <item itemvalue="Python.time2MultIindex" />
         <item itemvalue="Python.results2MultiIndex" />
@@ -350,20 +373,27 @@
       <option name="project" value="LOCAL" />
       <updated>1538894391530</updated>
     </task>
-    <option name="localTasksCounter" value="5" />
+    <task id="LOCAL-00005" summary="New program, network_stats.py">
+      <created>1540515537440</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1540515537440</updated>
+    </task>
+    <option name="localTasksCounter" value="6" />
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="1616" y="35" width="1511" height="1047" extended-state="0" />
+    <frame x="1579" y="28" width="1630" height="1047" extended-state="0" />
     <editor active="true" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.0041293874" />
+      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.003816794" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" />
-      <window_info anchor="bottom" id="Run" order="2" weight="0.39819005" />
-      <window_info anchor="bottom" id="Debug" order="3" weight="0.5294118" />
+      <window_info active="true" anchor="bottom" id="Run" order="2" visible="true" weight="0.1463964" />
+      <window_info anchor="bottom" id="Debug" order="3" weight="0.670045" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="bottom" id="TODO" order="6" />
@@ -372,8 +402,9 @@
       <window_info anchor="bottom" id="Database Changes" order="9" show_stripe_button="false" />
       <window_info anchor="bottom" id="Event Log" order="10" side_tool="true" />
       <window_info anchor="bottom" id="Terminal" order="11" />
-      <window_info anchor="bottom" id="Python Console" order="12" weight="0.5880361" />
+      <window_info anchor="bottom" id="Python Console" order="12" weight="0.5878378" />
       <window_info anchor="bottom" id="Inspection Results" order="13" weight="0.32918552" />
+      <window_info anchor="right" id="Coverage" side_tool="true" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
@@ -419,7 +450,8 @@
     <MESSAGE value="Added typing information to the DataFrames&#10;&#10;SIZE should be an integer&#10;LOSS, DELAY, and bandwidth should be floats&#10;PROTOCOL should be a string (I didn't make that explicit)" />
     <MESSAGE value="Fixed REs to make more general&#10;&#10;The reported bandwidth from the wget command is always scaled so that it&#10;is 3 significant figures.  That means that (126 MB/s), (11.2 MB/s), and&#10;(346 KB/s) are all legitimate answers.  So my regex has to be more&#10;general and I have to know if I am dealing with MB/s or KB/s.  I also&#10;have to multiply the value by either 1000 or 1000000." />
     <MESSAGE value="Changed list of delays and list of loss percents, changed logging&#10;&#10;Now, instead of using tee, I am fgrepping the log file as it is made&#10;and then displaying the last two lines.  This should give a better&#10;handle on the status of the run" />
-    <option name="LAST_COMMIT_MESSAGE" value="Changed list of delays and list of loss percents, changed logging&#10;&#10;Now, instead of using tee, I am fgrepping the log file as it is made&#10;and then displaying the last two lines.  This should give a better&#10;handle on the status of the run" />
+    <MESSAGE value="New program, network_stats.py" />
+    <option name="LAST_COMMIT_MESSAGE" value="New program, network_stats.py" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -439,6 +471,36 @@
           <line>104</line>
           <option name="timeStamp" value="26" />
         </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/network_stats.py</url>
+          <line>130</line>
+          <option name="timeStamp" value="28" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/network_stats.py</url>
+          <line>136</line>
+          <option name="timeStamp" value="29" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/network_stats.py</url>
+          <line>84</line>
+          <option name="timeStamp" value="31" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/network_stats.py</url>
+          <line>104</line>
+          <option name="timeStamp" value="32" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/network_stats.py</url>
+          <line>117</line>
+          <option name="timeStamp" value="33" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/network_stats.py</url>
+          <line>125</line>
+          <option name="timeStamp" value="34" />
+        </line-breakpoint>
       </breakpoints>
       <default-breakpoints>
         <breakpoint type="python-exception">
@@ -451,6 +513,16 @@
   </component>
   <component name="debuggerHistoryManager">
     <expressions id="evaluateExpression">
+      <expression>
+        <expression-string>s.getsockname()</expression-string>
+        <language-id>Python</language-id>
+        <evaluation-mode>EXPRESSION</evaluation-mode>
+      </expression>
+      <expression>
+        <expression-string>s.family</expression-string>
+        <language-id>Python</language-id>
+        <evaluation-mode>EXPRESSION</evaluation-mode>
+      </expression>
       <expression>
         <expression-string>df.index.levels[2].name</expression-string>
         <language-id>Python</language-id>
@@ -486,16 +558,6 @@
         <language-id>Python</language-id>
         <evaluation-mode>EXPRESSION</evaluation-mode>
       </expression>
-      <expression>
-        <expression-string>df.index</expression-string>
-        <language-id>Python</language-id>
-        <evaluation-mode>EXPRESSION</evaluation-mode>
-      </expression>
-      <expression>
-        <expression-string>df</expression-string>
-        <language-id>Python</language-id>
-        <evaluation-mode>EXPRESSION</evaluation-mode>
-      </expression>
     </expressions>
   </component>
   <component name="editorHistoryManager">
@@ -503,13 +565,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="166">
           <caret line="121" selection-start-line="121" selection-end-line="121" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file:///usr/lib/python3.6/re.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="166">
-          <caret line="221" selection-start-line="221" selection-end-line="221" />
         </state>
       </provider>
     </entry>
@@ -528,13 +583,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="322">
           <caret line="59" selection-start-line="59" selection-end-line="59" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file:///usr/lib/python3/dist-packages/apport_python_hook.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="144">
-          <caret line="46" selection-start-line="46" selection-end-line="46" />
         </state>
       </provider>
     </entry>
@@ -580,14 +628,63 @@
         </state>
       </provider>
     </entry>
+    <entry file="file:///usr/lib/python3.6/ipaddress.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="129">
+          <caret line="43" selection-start-line="43" selection-end-line="43" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$APPLICATION_HOME_DIR$/helpers/pydev/pydevd.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="283">
+          <caret line="1663" selection-start-line="1663" selection-end-line="1663" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file:///usr/lib/python3.6/re.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="166">
+          <caret line="300" selection-start-line="300" selection-end-line="300" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file:///usr/lib/python3.6/sre_compile.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="87">
+          <caret line="561" selection-start-line="561" selection-end-line="561" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file:///usr/lib/python3.6/sre_parse.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="87">
+          <caret line="854" selection-start-line="854" selection-end-line="854" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file:///usr/lib/python3.6/enum.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="87">
+          <caret line="803" selection-start-line="803" selection-end-line="803" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file:///usr/lib/python3/dist-packages/apport_python_hook.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="593">
+          <caret line="46" selection-start-line="46" selection-end-line="46" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/network_stats.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="286">
-          <caret line="53" column="54" selection-start-line="53" selection-start-column="54" selection-end-line="53" selection-end-column="54" />
+        <state relative-caret-position="614">
+          <caret line="69" column="83" selection-start-line="69" selection-start-column="83" selection-end-line="69" selection-end-column="83" />
           <folding>
             <element signature="e#100#116#0" expanded="true" />
-            <marker date="1540515395607" expanded="true" signature="284:289" ph="..." />
-            <marker date="1540515395607" expanded="true" signature="636:1614" ph="..." />
+            <marker date="1540539450091" expanded="true" signature="284:289" ph="..." />
+            <marker date="1540539450091" expanded="true" signature="1083:1625" ph="..." />
           </folding>
         </state>
       </provider>
