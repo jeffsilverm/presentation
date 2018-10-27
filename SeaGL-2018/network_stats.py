@@ -96,6 +96,8 @@ def count_retries(source_addr: str, source_port: int, destination_addr: str,
                   f"fired.  Why?\n  src_port={conn_src_port} "
                   f"source_port={source_port} dst_port={conn_dst_port} "
                   f"destination_port={destination_port}\n" +
+                  f"Local address={source_addr_hex} " +
+                  f"Remote_address={dest_addr_hex} \n" +
                   connections[0], "\n", conn, "\n", file=sys.stderr)
         if one_match or two_matches or port_match:
             count = int(fields[6])
