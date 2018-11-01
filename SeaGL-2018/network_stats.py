@@ -2,6 +2,7 @@
 #
 # This program sets the IP packet loss ratio and counts the TCP retransmits
 #
+import datetime
 import ipaddress
 import socket
 import sys
@@ -69,6 +70,9 @@ def count_retries(source_addr: str, source_port: int, destination_addr: str,
     # The documentation on the contents of /proc/net/tcp is at
     # http://lkml.iu.edu/hypermail/linux/kernel/0409.1/2166.html
     # See also https://www.kernel.org/doc/Documentation/networking/proc_net_tcp.txt
+    # For an alternative way to count retries, see
+    # https://www.ibm.com/developerworks/community/blogs/kevgrig/entry/Best_Practice_Monitor_TCP_Retransmits?lang=en
+    # which suggests using the netstat -s command 
     for conn in connections:
         if "local_address" in conn:  # skip first line
             continue
@@ -88,14 +92,15 @@ def count_retries(source_addr: str, source_port: int, destination_addr: str,
         # likely for a false match. If I can get the other two camparisons to work
         # then this should go away.
         # The assert is here because I actually had this issue come up.
-        assert type(conn_src_port) == type(source_port) and \
-            type(conn_dst_port) == type(destination_port)
+        assert type(conn_src_port) == type(source_port) \
+            and type(conn_dst_port) == type(destination_port)
         port_match: bool = (conn_src_port == source_port) and (conn_dst_port == destination_port)
         if port_match and not (one_match or two_matches):
             print("Port match fired but neither of the other two matches "
-                  f"fired.  Why?\n  src_port={conn_src_port} "
-                  f"source_port={source_port} dst_port={conn_dst_port} "
-                  f"destination_port={destination_port}\n" +
+                  f"fired.  Why?\n  src_port={conn_src_port} ({conn_src_port:04X} "
+                  f"source_port={source_port} ({source_port:04X}) "
+                  f"dst_port={conn_dst_port} ({conn_dst_port:04X}) "
+                  f"destination_port={destination_port} ({destination_port:04X}) \n" +
                   f"Local address={source_addr_hex} " +
                   f"Remote_address={dest_addr_hex} \n" +
                   connections[0], "\n", conn, "\n", file=sys.stderr)
@@ -130,16 +135,37 @@ if "__main__" == __name__:
     # Starting in Python 3.2, create can use a specific source address/port pair
     # Not sure how to tell which protocol was selected
     # s = socket.create_connection(dest_tuple, 1.5, ("0", 0))
-    s = socket.socket(family=protocol, type=socket.SOCK_STREAM)
-    assert s.family == protocol, "socket.create_connection used the wrong protocol" \
-                                 f"Should have been {protocol} was actually {s.family}"
-    try:
-        s.connect(dest_tuple)
-    except ConnectionRefusedError as c:
-        print(f"The socket connect call failed to connect to {dest_tuple}.  "
-              f"Try running nc -k -l {remote_port} on {remote_addr} \n{str(c)}\n",
-              file=sys.stderr)
-        raise
+    first_attempt = True
+    s = None
+    while first_attempt:
+        first_attempt = False
+        s = socket.socket(family=protocol, type=socket.SOCK_STREAM)
+        assert s.family == protocol, "socket.create_connection used the wrong protocol" \
+                                     f"Should have been {protocol} was actually {s.family}"
+        try:
+            s.connect(dest_tuple)
+        except ConnectionRefusedError as c:
+            print(f"The socket connect call failed to connect to {dest_tuple}.  "
+                  f"Try running nc {protocol_str} -k -l {remote_port} on {remote_addr} \n{str(c)}\n",
+                  file=sys.stderr)
+            sys.exit(1)
+        except socket.gaierror as s:
+            print(f"Name or service not known: {remote_addr}\nTry again with"
+                  "hard coded remote address", file=sys.stderr)
+            if protocol == socket.AF_INET:
+                remote_addr = "208.97.189.29"  # Commercialventvac.com
+                dest_tuple: Tuple[str, int] = (remote_addr, int(remote_port))
+            else:
+                # The extra information is flowinfo and  scopeid.  See
+                # https://docs.python.org/3/library/socket.html#socket-families
+                remote_addr = "2607:f298:5:115f::23:e397"  # Commercialventvac.com
+                dest_tuple: Tuple[str, int, int, int] = (remote_addr, int(remote_port), 0, 0)
+    assert s is not None, "Just could not establish a connection" + \
+                          f"remote address is {remote_addr} remote_port is {remote_port}" \
+                          " protocol is {protocol}"
+    print(f"Made a connection to remote address {remote_addr} remote_port " 
+          f"{remote_port} protocol is {protocol}")
+
     try:
         if s.family == socket.AF_INET:
             nom_src_addr, nom_src_port = s.getsockname()
@@ -154,15 +180,18 @@ if "__main__" == __name__:
             print("Caught AssertionError from count_retries", file=sys.stderr)
             c1 = 0
         data = b"sdfadfasdfqwerqwerwefsadfasdfasdfasdf"
+        start_time = datetime.datetime.now()
         for i in range(100):
             s.send(data)
+        end_time = datetime.datetime.now()
         try:
             c2: int = count_retries(nom_src_addr, nom_src_port, nom_dst_addr,
                                     nom_dst_port, lcl_protocol=protocol)
         except AssertionError as a:
             print("Caught AssertionError from count_retries", file=sys.stderr)
             c2 = 0
-        print(c2 - c1)
+        print(f"Retries: {c2 - c1}")
+        print(f"Elapsed time: {end_time - start_time} ")
     except FloatingPointError as e:
         print("Something went wrong somewhere " + str(e))
     s.close()
