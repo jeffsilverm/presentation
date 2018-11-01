@@ -5,8 +5,37 @@
 import datetime
 import ipaddress
 import socket
+import subprocess
 import sys
 from typing import Tuple
+
+REPETITIONS = 10
+
+
+def get_delay_loss_percent() -> Tuple[str, str]:
+    """Get the delay in the msec and the loss rate as a percent """
+    results: subprocess.CompletedProcess = \
+        subprocess.run(["sudo", "tc", "qdisc", "show", "dev", "enp0s25"],
+                       stdout=subprocess.PIPE)
+    """Output looks like:
+    qdisc netem 8013: root refcnt 2 limit 1000 delay 1.0ms loss 10%
+    qdisc netem 8013: root refcnt 2 limit 1000 delay FLOATms loss FLOAT%
+    """
+    output: bytes = results.stdout
+    words = str(output).split()
+    for k in range(len(words)):
+        words[k] = str(words[k])
+    # I'm not sure where the b' comes from, but it's there.  Since I don't actually
+    # use qdisc for anything, I just accept that it is and move on.
+    # Also, there is some kruft at the last word.
+    words[0]=words[0][2:]
+    words[11]=words[11][:-3]
+    assert words[0] == "qdisc", f"First word was {words[0]} not b'qdisc\n{words}"
+    assert words[9][-2:] == "ms", f"words[9] did not have ms, was {words[9]}\n{words}"
+    assert words[11][-1:] == "%", f"words[11] should end in %, was {words[11]}\n{words}"
+    delay_ = words[9][:-2]
+    loss_percent_ = words[11][:-1]
+    return delay_, loss_percent_
 
 
 def count_retries(source_addr: str, source_port: int, destination_addr: str,
@@ -72,7 +101,7 @@ def count_retries(source_addr: str, source_port: int, destination_addr: str,
     # See also https://www.kernel.org/doc/Documentation/networking/proc_net_tcp.txt
     # For an alternative way to count retries, see
     # https://www.ibm.com/developerworks/community/blogs/kevgrig/entry/Best_Practice_Monitor_TCP_Retransmits?lang=en
-    # which suggests using the netstat -s command 
+    # which suggests using the netstat -s command
     for conn in connections:
         if "local_address" in conn:  # skip first line
             continue
@@ -92,8 +121,10 @@ def count_retries(source_addr: str, source_port: int, destination_addr: str,
         # likely for a false match. If I can get the other two camparisons to work
         # then this should go away.
         # The assert is here because I actually had this issue come up.
-        assert type(conn_src_port) == type(source_port) \
-            and type(conn_dst_port) == type(destination_port)
+        assert (type(conn_src_port) == type(source_port)), \
+            "The types of conn_src_port and source_port did not match"
+        assert type(conn_dst_port) == type(destination_port), \
+            "The types of conn_dst_port and destination_port did not match"
         port_match: bool = (conn_src_port == source_port) and (conn_dst_port == destination_port)
         if port_match and not (one_match or two_matches):
             print("Port match fired but neither of the other two matches "
@@ -121,10 +152,14 @@ if "__main__" == __name__:
         remote_addr = sys.argv[1]
         remote_port = sys.argv[2]
         protocol_str = sys.argv[3] if len(sys.argv) > 3 else "-4"
+        size = int(sys.argv[4]) if len(sys.argv) > 4 else 4096
     else:
         remote_addr = "commercialventvac.com"  # "2607:f298:5:115f::23:e397"
         remote_port = "4000"
         protocol_str = "-6"
+        size = 4096
+    if protocol_str != "-4" and protocol_str != "-6":
+        raise ValueError(f"protocol_str must be either -4 or -6, you entered {protocol_str}")
     protocol: socket.AddressFamily = (socket.AF_INET6 if protocol_str == "-6" else socket.AF_INET)
     if protocol == socket.AF_INET:
         dest_tuple: Tuple[str, int] = (remote_addr, int(remote_port))
@@ -138,7 +173,6 @@ if "__main__" == __name__:
     first_attempt = True
     s = None
     while first_attempt:
-        first_attempt = False
         s = socket.socket(family=protocol, type=socket.SOCK_STREAM)
         assert s.family == protocol, "socket.create_connection used the wrong protocol" \
                                      f"Should have been {protocol} was actually {s.family}"
@@ -160,10 +194,12 @@ if "__main__" == __name__:
                 # https://docs.python.org/3/library/socket.html#socket-families
                 remote_addr = "2607:f298:5:115f::23:e397"  # Commercialventvac.com
                 dest_tuple: Tuple[str, int, int, int] = (remote_addr, int(remote_port), 0, 0)
+        if s is not None:  # then we succeeded in making a connection on either the first or second attempt
+            break
     assert s is not None, "Just could not establish a connection" + \
                           f"remote address is {remote_addr} remote_port is {remote_port}" \
                           " protocol is {protocol}"
-    print(f"Made a connection to remote address {remote_addr} remote_port " 
+    print(f"Made a connection to remote address {remote_addr} remote_port "
           f"{remote_port} protocol is {protocol}")
 
     try:
@@ -179,9 +215,10 @@ if "__main__" == __name__:
         except AssertionError as a:
             print("Caught AssertionError from count_retries", file=sys.stderr)
             c1 = 0
-        data = b"sdfadfasdfqwerqwerwefsadfasdfasdfasdf"
+        assert isinstance(size, int), f"Size should be int, is {type(size)}"
+        data = size * b"@"
         start_time = datetime.datetime.now()
-        for i in range(100):
+        for i in range(REPETITIONS):  # Take an average
             s.send(data)
         end_time = datetime.datetime.now()
         try:
@@ -190,8 +227,10 @@ if "__main__" == __name__:
         except AssertionError as a:
             print("Caught AssertionError from count_retries", file=sys.stderr)
             c2 = 0
-        print(f"Retries: {c2 - c1}")
-        print(f"Elapsed time: {end_time - start_time} ")
+        delay, loss_percent = get_delay_loss_percent()
+        print(f"Retries: {c2 - c1} "
+              f"Elapsed time: {(end_time - start_time)/REPETITIONS} "
+              f"Delay: {delay} loss percent: {loss_percent}")
     except FloatingPointError as e:
         print("Something went wrong somewhere " + str(e))
     s.close()
