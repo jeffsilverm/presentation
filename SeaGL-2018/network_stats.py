@@ -29,12 +29,20 @@ def get_delay_loss_percent() -> Tuple[str, str]:
     # use qdisc for anything, I just accept that it is and move on.
     # Also, there is some kruft at the last word.
     words[0]=words[0][2:]
-    words[11]=words[11][:-3]
+    words[-1]=words[-1][:-3]
     assert words[0] == "qdisc", f"First word was {words[0]} not b'qdisc\n{words}"
-    assert words[9][-2:] == "ms", f"words[9] did not have ms, was {words[9]}\n{words}"
-    assert words[11][-1:] == "%", f"words[11] should end in %, was {words[11]}\n{words}"
-    delay_ = words[9][:-2]
-    loss_percent_ = words[11][:-1]
+    if words[-3][-2:] != "ms" :
+        delay_ = "0"
+    else:
+        delay_ = words[-3][:-2]
+    # If the word loss is not there, then the loss is 0 msec. tc is
+    # inconsistent that way
+    if "loss" not in words[-2]:
+        loss_percent_ = "0.0"
+    elif words[-1][-1:] == "%":
+        loss_percent_ = words[-1][:-1]
+    else:
+        raise AssertionError(f"words[-1] is {words[-1]} and I don't get it")
     return delay_, loss_percent_
 
 
@@ -75,10 +83,8 @@ def count_retries(source_addr: str, source_port: int, destination_addr: str,
         return add_hex
 
     assert (lcl_protocol == socket.AF_INET or lcl_protocol == socket.AF_INET6), \
-        print(
-            f"lcl_protocol is {lcl_protocol}, should be socket.AF_INET or "
-            f"socket.AF_INET6",
-            file=sys.stderr)
+        ( f"lcl_protocol is {lcl_protocol}, should be {socket.AF_INET} or "
+            f"{socket.AF_INET6}" )
 
     source_addr_hex: str = str_to_hex_addr(source_addr, s2ha_protocol=lcl_protocol).upper()
     # I came across a case where the source address was 192.168.0.21 and the
@@ -218,8 +224,7 @@ if "__main__" == __name__:
         assert isinstance(size, int), f"Size should be int, is {type(size)}"
         data = size * b"@"
         start_time = datetime.datetime.now()
-        for i in range(REPETITIONS):  # Take an average
-            s.send(data)
+        s.send(data)
         end_time = datetime.datetime.now()
         try:
             c2: int = count_retries(nom_src_addr, nom_src_port, nom_dst_addr,
@@ -229,8 +234,8 @@ if "__main__" == __name__:
             c2 = 0
         delay, loss_percent = get_delay_loss_percent()
         print(f"Retries: {c2 - c1} "
-              f"Elapsed time: {(end_time - start_time)/REPETITIONS} "
-              f"Delay: {delay} loss percent: {loss_percent}")
+              f"Elapsed time: {(end_time - start_time)} "
+              f"Delay: {delay} loss percent: {loss_percent} size: {size} bytes")
     except FloatingPointError as e:
         print("Something went wrong somewhere " + str(e))
     s.close()
