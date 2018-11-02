@@ -5,9 +5,11 @@
     <option name="CUSTOM_SCOPE_NAME" value="Current File" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="aa93e885-664d-4342-af57-438185dc3490" name="Default Changelist" comment="">
+    <list default="true" id="aa93e885-664d-4342-af57-438185dc3490" name="Default Changelist" comment="Runs without any errors.  That doesn't mean it's right.&#10;&#10;Tomorrow, test with tc.">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/network_stats.py" beforeDir="false" afterPath="$PROJECT_DIR$/network_stats.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/run_network_stats.sh" beforeDir="false" afterPath="$PROJECT_DIR$/run_network_stats.sh" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/simple-server.py" beforeDir="false" afterPath="$PROJECT_DIR$/simple-server.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -17,7 +19,8 @@
   </component>
   <component name="CoverageDataManager">
     <SUITE FILE_PATH="coverage/SeaGL_2018$Plotting_the_results_of_measure2_sh.coverage" NAME="Plotting_the_results_of_measure2.sh Coverage Results" MODIFIED="1539777331776" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/SeaGL_2018$network_stats.coverage" NAME="network_stats Coverage Results" MODIFIED="1540536368515" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/SeaGL_2018$network_stats.coverage" NAME="network_stats Coverage Results" MODIFIED="1541184055004" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/SeaGL_2018$simple_server.coverage" NAME="simple-server Coverage Results" MODIFIED="1541196450179" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/SeaGL_2018$results2MultiIndex.coverage" NAME="results2MultiIndex Coverage Results" MODIFIED="1539070891979" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/SeaGL_2018$time2MultIindex.coverage" NAME="time2MultIindex Coverage Results" MODIFIED="1539734494887" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
@@ -25,19 +28,19 @@
     <session id="-1331518775">
       <usages-collector id="statistics.lifecycle.project">
         <counts>
-          <entry key="project.closed" value="18" />
+          <entry key="project.closed" value="27" />
           <entry key="project.open.time.0" value="1" />
           <entry key="project.open.time.2" value="1" />
-          <entry key="project.open.time.4" value="9" />
-          <entry key="project.open.time.5" value="8" />
-          <entry key="project.open.time.6" value="1" />
-          <entry key="project.opened" value="20" />
+          <entry key="project.open.time.4" value="10" />
+          <entry key="project.open.time.5" value="10" />
+          <entry key="project.open.time.6" value="7" />
+          <entry key="project.opened" value="29" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.open">
         <counts>
           <entry key="pstat" value="2" />
-          <entry key="py" value="29" />
+          <entry key="py" value="36" />
           <entry key="sh" value="5" />
           <entry key="txt" value="1" />
         </counts>
@@ -46,16 +49,16 @@
         <counts>
           <entry key="Python Console" value="7" />
           <entry key="dummy" value="2" />
-          <entry key="py" value="18100" />
+          <entry key="py" value="23589" />
           <entry key="sh" value="151" />
-          <entry key="txt" value="1316" />
+          <entry key="txt" value="1556" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.edit">
         <counts>
           <entry key="Bash" value="75" />
-          <entry key="PLAIN_TEXT" value="1318" />
-          <entry key="Python" value="18183" />
+          <entry key="PLAIN_TEXT" value="1558" />
+          <entry key="Python" value="23672" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.open">
@@ -63,7 +66,7 @@
           <entry key="Bash" value="4" />
           <entry key="PLAIN_TEXT" value="2" />
           <entry key="Profiler Session" value="2" />
-          <entry key="Python" value="29" />
+          <entry key="Python" value="36" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.js.language.service.starts" />
@@ -79,12 +82,10 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/network_stats.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="614">
-              <caret line="69" column="83" selection-start-line="69" selection-start-column="83" selection-end-line="69" selection-end-column="83" />
+            <state relative-caret-position="183">
+              <caret line="136" column="32" selection-start-line="136" selection-start-column="32" selection-end-line="136" selection-end-column="32" />
               <folding>
-                <element signature="e#100#116#0" expanded="true" />
-                <marker date="1540539450091" expanded="true" signature="284:289" ph="..." />
-                <marker date="1540539450091" expanded="true" signature="1083:1625" ph="..." />
+                <element signature="e#100#115#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -111,6 +112,13 @@
       <find>PROTOCOL</find>
       <find>but it should be one of</find>
       <find>open</find>
+      <find>src_port =</find>
+      <find>IP_COMMAND</find>
+      <find>datetime</find>
+      <find>word</find>
+      <find>f&quot;</find>
+      <find>protocol_str</find>
+      <find>Made a</find>
     </findStrings>
     <replaceStrings>
       <replace>http</replace>
@@ -133,6 +141,8 @@
         <option value="$PROJECT_DIR$/Plotting_the_results_of_measure2.sh.py" />
         <option value="$PROJECT_DIR$/time2MultIindex.py" />
         <option value="$PROJECT_DIR$/results2MultiIndex.py" />
+        <option value="$USER_HOME$/python/nbmdt/network.py" />
+        <option value="$PROJECT_DIR$/simple-server.py" />
         <option value="$PROJECT_DIR$/network_stats.py" />
       </list>
     </option>
@@ -144,10 +154,10 @@
     <sorting>DEFINITION_ORDER</sorting>
   </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="1579" />
-    <option name="y" value="28" />
-    <option name="width" value="1630" />
-    <option name="height" value="1047" />
+    <option name="x" value="1487" />
+    <option name="y" value="489" />
+    <option name="width" value="1711" />
+    <option name="height" value="495" />
   </component>
   <component name="ProjectInspectionProfilesVisibleTreeState">
     <entry key="Project Default">
@@ -160,7 +170,7 @@
         </expanded-state>
         <selected-state>
           <State>
-            <id>PyShadowingNamesInspection</id>
+            <id>PyPep8Inspection</id>
           </State>
         </selected-state>
       </profile-state>
@@ -172,6 +182,17 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
+      <pane id="Scope">
+        <subPane subId="Scope 'Project Files'; set:Project Files; class com.intellij.psi.search.scope.ProjectFilesScope">
+          <expand>
+            <path>
+              <item name="SeaGL-2018" type="3d21c010:ScopeViewTreeModel$ProjectNode" />
+              <item name="" type="442cc68d:ScopeViewTreeModel$RootNode" />
+            </path>
+          </expand>
+          <select />
+        </subPane>
+      </pane>
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -183,16 +204,15 @@
           <select />
         </subPane>
       </pane>
-      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
     <property name="WebServerToolWindowFactoryState" value="false" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/results2MultiIndex.py" />
+    <property name="last_opened_file_path" value="$USER_HOME$/nbmdt/configuration.py" />
     <property name="nodejs_interpreter_path.stuck_in_default_project" value="undefined stuck path" />
     <property name="nodejs_npm_path_reset_for_default_project" value="true" />
     <property name="run.code.analysis.last.selected.profile" value="pProject Default" />
-    <property name="settings.editor.selected.configurable" value="preferences.sourceCode" />
+    <property name="settings.editor.selected.configurable" value="Errors" />
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
@@ -211,7 +231,7 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="Python.network_stats">
+  <component name="RunManager" selected="Python.simple-server">
     <configuration name="Plotting_the_results_of_measure2.sh" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <module name="SeaGL-2018" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -260,6 +280,9 @@
       <module name="SeaGL-2018" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
       <option name="SDK_HOME" value="" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
       <option name="IS_MODULE_SDK" value="true" />
@@ -297,6 +320,25 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
+    <configuration name="simple-server" type="PythonConfigurationType" factoryName="Python" temporary="true">
+      <module name="SeaGL-2018" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/simple-server.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="true" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
     <configuration name="time2MultIindex" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <module name="SeaGL-2018" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -324,9 +366,11 @@
       <item itemvalue="Python.Plotting_the_results_of_measure2.sh" />
       <item itemvalue="Python.time2MultIindex" />
       <item itemvalue="Python.network_stats" />
+      <item itemvalue="Python.simple-server" />
     </list>
     <recent_temporary>
       <list>
+        <item itemvalue="Python.simple-server" />
         <item itemvalue="Python.network_stats" />
         <item itemvalue="Python.Plotting_the_results_of_measure2.sh" />
         <item itemvalue="Python.time2MultIindex" />
@@ -380,20 +424,48 @@
       <option name="project" value="LOCAL" />
       <updated>1540515537440</updated>
     </task>
-    <option name="localTasksCounter" value="6" />
+    <task id="LOCAL-00006" summary="Runs without any errors.  That doesn't mean it's right.&#10;&#10;Tomorrow, test with tc.">
+      <created>1540628689315</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1540628689315</updated>
+    </task>
+    <task id="LOCAL-00007" summary="Added a little more address debugging&#10;&#10;Tomorrow, test with tc.">
+      <created>1540628981897</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1540628981897</updated>
+    </task>
+    <task id="LOCAL-00008" summary="Uses tc to get the queuing discipline parameters">
+      <created>1541112708408</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1541112708408</updated>
+    </task>
+    <task id="LOCAL-00009" summary="Works with both IPv4 and IPv6 on jeffs-desktop">
+      <created>1541188713515</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1541188713515</updated>
+    </task>
+    <option name="localTasksCounter" value="10" />
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="1579" y="28" width="1630" height="1047" extended-state="0" />
+    <frame x="1487" y="12" width="1711" height="972" extended-state="0" />
     <editor active="true" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.003816794" />
+      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.14882033" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
-      <window_info anchor="bottom" id="Find" order="1" />
-      <window_info active="true" anchor="bottom" id="Run" order="2" visible="true" weight="0.1463964" />
-      <window_info anchor="bottom" id="Debug" order="3" weight="0.670045" />
+      <window_info anchor="bottom" id="Find" order="1" weight="0.6545454" />
+      <window_info anchor="bottom" id="Run" order="2" weight="0.599016" />
+      <window_info active="true" anchor="bottom" id="Debug" order="3" visible="true" weight="0.30750307" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="bottom" id="TODO" order="6" />
@@ -402,15 +474,15 @@
       <window_info anchor="bottom" id="Database Changes" order="9" show_stripe_button="false" />
       <window_info anchor="bottom" id="Event Log" order="10" side_tool="true" />
       <window_info anchor="bottom" id="Terminal" order="11" />
-      <window_info anchor="bottom" id="Python Console" order="12" weight="0.5878378" />
+      <window_info anchor="bottom" id="Python Console" order="12" weight="0.4071341" />
       <window_info anchor="bottom" id="Inspection Results" order="13" weight="0.32918552" />
-      <window_info anchor="right" id="Coverage" side_tool="true" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
       <window_info anchor="right" id="SciView" order="3" sideWeight="0.8942308" weight="0.3804273" />
       <window_info anchor="right" id="Database" order="4" />
       <window_info anchor="right" x="0" y="0" width="388" height="843" id="Documentation" order="5" sideWeight="0.10576923" side_tool="true" weight="0.25132743" />
+      <window_info anchor="right" id="Coverage" order="6" side_tool="true" />
     </layout>
     <layout-to-restore>
       <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.036013402" />
@@ -451,7 +523,11 @@
     <MESSAGE value="Fixed REs to make more general&#10;&#10;The reported bandwidth from the wget command is always scaled so that it&#10;is 3 significant figures.  That means that (126 MB/s), (11.2 MB/s), and&#10;(346 KB/s) are all legitimate answers.  So my regex has to be more&#10;general and I have to know if I am dealing with MB/s or KB/s.  I also&#10;have to multiply the value by either 1000 or 1000000." />
     <MESSAGE value="Changed list of delays and list of loss percents, changed logging&#10;&#10;Now, instead of using tee, I am fgrepping the log file as it is made&#10;and then displaying the last two lines.  This should give a better&#10;handle on the status of the run" />
     <MESSAGE value="New program, network_stats.py" />
-    <option name="LAST_COMMIT_MESSAGE" value="New program, network_stats.py" />
+    <MESSAGE value="Runs without any errors.  That doesn't mean it's right.&#10;&#10;Tomorrow, test with tc." />
+    <MESSAGE value="Added a little more address debugging&#10;&#10;Tomorrow, test with tc." />
+    <MESSAGE value="Uses tc to get the queuing discipline parameters" />
+    <MESSAGE value="Works with both IPv4 and IPv6 on jeffs-desktop" />
+    <option name="LAST_COMMIT_MESSAGE" value="Works with both IPv4 and IPv6 on jeffs-desktop" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -473,35 +549,28 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/network_stats.py</url>
-          <line>130</line>
-          <option name="timeStamp" value="28" />
+          <line>246</line>
+          <option name="timeStamp" value="43" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/network_stats.py</url>
-          <line>136</line>
-          <option name="timeStamp" value="29" />
+          <line>151</line>
+          <option name="timeStamp" value="47" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/network_stats.py</url>
-          <line>84</line>
-          <option name="timeStamp" value="31" />
+          <line>24</line>
+          <option name="timeStamp" value="48" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/network_stats.py</url>
-          <line>104</line>
-          <option name="timeStamp" value="32" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/network_stats.py</url>
-          <line>117</line>
-          <option name="timeStamp" value="33" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/network_stats.py</url>
-          <line>125</line>
-          <option name="timeStamp" value="34" />
+          <line>240</line>
+          <option name="timeStamp" value="49" />
         </line-breakpoint>
       </breakpoints>
+      <breakpoints-dialog>
+        <breakpoints-dialog />
+      </breakpoints-dialog>
       <default-breakpoints>
         <breakpoint type="python-exception">
           <properties notifyOnTerminate="true" exception="BaseException">
@@ -512,49 +581,63 @@
     </breakpoint-manager>
   </component>
   <component name="debuggerHistoryManager">
+    <expressions id="breakpointCondition">
+      <expression>
+        <expression-string>dst_port == &quot;0FA0&quot;</expression-string>
+        <language-id>Python</language-id>
+        <evaluation-mode>EXPRESSION</evaluation-mode>
+      </expression>
+    </expressions>
+    <expressions id="breakpointLogExpression">
+      <expression>
+        <expression-string>&quot;:&quot;.split(fields[1])</expression-string>
+        <language-id>Python</language-id>
+        <evaluation-mode>EXPRESSION</evaluation-mode>
+      </expression>
+    </expressions>
     <expressions id="evaluateExpression">
       <expression>
-        <expression-string>s.getsockname()</expression-string>
+        <expression-string>fields[1].split(&quot;:&quot;)</expression-string>
         <language-id>Python</language-id>
         <evaluation-mode>EXPRESSION</evaluation-mode>
       </expression>
       <expression>
-        <expression-string>s.family</expression-string>
+        <expression-string>&quot;:&quot;.split(fields[1])</expression-string>
         <language-id>Python</language-id>
         <evaluation-mode>EXPRESSION</evaluation-mode>
       </expression>
       <expression>
-        <expression-string>df.index.levels[2].name</expression-string>
+        <expression-string>e.__traceback__</expression-string>
         <language-id>Python</language-id>
         <evaluation-mode>EXPRESSION</evaluation-mode>
       </expression>
       <expression>
-        <expression-string>df.index.levels[2]</expression-string>
+        <expression-string>e.__traceback__()</expression-string>
         <language-id>Python</language-id>
         <evaluation-mode>EXPRESSION</evaluation-mode>
       </expression>
       <expression>
-        <expression-string>df.index.levels[2].values</expression-string>
+        <expression-string>dir(e)</expression-string>
         <language-id>Python</language-id>
         <evaluation-mode>EXPRESSION</evaluation-mode>
       </expression>
       <expression>
-        <expression-string>df.index.levels[3]</expression-string>
+        <expression-string>e.with_traceback(None)</expression-string>
         <language-id>Python</language-id>
         <evaluation-mode>EXPRESSION</evaluation-mode>
       </expression>
       <expression>
-        <expression-string>df.index.levels['DELAY']</expression-string>
+        <expression-string>e.with_traceback(3)</expression-string>
         <language-id>Python</language-id>
         <evaluation-mode>EXPRESSION</evaluation-mode>
       </expression>
       <expression>
-        <expression-string>df.index.levels</expression-string>
+        <expression-string>e.with_traceback()</expression-string>
         <language-id>Python</language-id>
         <evaluation-mode>EXPRESSION</evaluation-mode>
       </expression>
       <expression>
-        <expression-string>df.index.levels.DELAY</expression-string>
+        <expression-string>e.args</expression-string>
         <language-id>Python</language-id>
         <evaluation-mode>EXPRESSION</evaluation-mode>
       </expression>
@@ -613,7 +696,6 @@
           <caret line="95" column="39" selection-start-line="95" selection-start-column="39" selection-end-line="95" selection-end-column="39" />
           <folding>
             <element signature="e#187#200#0" expanded="true" />
-            <marker date="1539823313038" expanded="true" signature="394:7142" ph="..." />
           </folding>
         </state>
       </provider>
@@ -672,19 +754,48 @@
     </entry>
     <entry file="file:///usr/lib/python3/dist-packages/apport_python_hook.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="593">
+        <state relative-caret-position="675">
           <caret line="46" selection-start-line="46" selection-end-line="46" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/nbmdt/configuration.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="510">
+          <caret line="43" column="12" lean-forward="true" selection-start-line="43" selection-start-column="12" selection-end-line="43" selection-end-column="12" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/python/nbmdt/network.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="210">
+          <caret line="27" column="21" selection-start-line="27" selection-start-column="21" selection-end-line="27" selection-end-column="21" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/.PyCharm2018.2/system/python_stubs/-1247971763/builtins.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="2543">
+          <caret line="2764" column="6" selection-start-line="2764" selection-start-column="6" selection-end-line="2764" selection-end-column="6" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/simple-server.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="345">
+          <caret line="23" column="47" selection-start-line="23" selection-start-column="47" selection-end-line="23" selection-end-column="47" />
+          <folding>
+            <element signature="e#104#117#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/network_stats.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="614">
-          <caret line="69" column="83" selection-start-line="69" selection-start-column="83" selection-end-line="69" selection-end-column="83" />
+        <state relative-caret-position="183">
+          <caret line="136" column="32" selection-start-line="136" selection-start-column="32" selection-end-line="136" selection-end-column="32" />
           <folding>
-            <element signature="e#100#116#0" expanded="true" />
-            <marker date="1540539450091" expanded="true" signature="284:289" ph="..." />
-            <marker date="1540539450091" expanded="true" signature="1083:1625" ph="..." />
+            <element signature="e#100#115#0" expanded="true" />
           </folding>
         </state>
       </provider>
