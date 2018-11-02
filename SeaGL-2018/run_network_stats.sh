@@ -23,9 +23,6 @@ network_em() {
 }
 
 
-# Get rid of any cruft from previous runs
-rm *.data.*
-
 REMOTE="commercialventvac.com"
 
 if [ "X${REMOTE}" = "XSMALL_DELL" ]; then
@@ -57,15 +54,11 @@ fi
 TIMESTAMP=$(date +%Y%m%d-%H%M)
 LOG_FILE="performance_$TIMESTAMP.log"
 RESULTS_FILE="performance_$TIMESTAMP.results"
-TIME_FILE="performance_$TIMESTAMP.time"
 if [ -f $RESULTS_FILE ]; then
   rm $RESULTS_FILE
 fi
 if [ -f $LOG_FILE ]; then
   rm $LOG_FILE
-fi
-if [ -f $TIME_FILE ]; then
-  rm $TIME_FILE
 fi
 # Have to first add a classless qdisc
 sudo tc qdisc add dev $INTERFACE root netem
@@ -74,94 +67,37 @@ echo "Remote $REMOTE has IPv4 address $REMOTE_4_ADDR and IPv6 address $REMOTE_6_
 # index in the echo commands below is last on the line.
 # for size in 1024.data 2048.data 4096.data; do
 # for size in 1024.data 2048.data 4096.data 8192.data 65536.data 131072.data; do
-for size in 2048.data 4096.data ; do
-	for loss in  0 10 20 ; do
-		for delay in  0 10.0 20.0 50.0 ; do
+for size in 1000 10000 100000 1000000; do
+	for loss in  0 0.1 10 20 30.1 50.2 60 70 80; do
+		for delay in  0 10.3 20.0 50 100 200 500; do
 			# See also https://www.cs.unm.edu/~crandall/netsfall13/TCtutorial.pdf
 			# There is a bug in the tc: it won't accept 0 as a value for loss (see end of this file for details)
 # [jeffs@smalldell ~]$ 
 
 			# There is a bug in tc: it won't handle 0 as a valid packet loss percentage.
-			if [ $loss = "0" ]; then loss1="0.00000000001"; else loss="$loss"; fi
-			sudo tc qdisc replace dev $INTERFACE root netem delay ${delay}ms loss ${loss1}% 
+			if [ $loss = "0" ]; then loss_1="0.00000000001"; else loss_1="$loss"; fi
+			sudo tc qdisc replace dev $INTERFACE root netem delay ${delay}ms loss ${loss_1}% 
 			sudo tc qdisc show dev $INTERFACE | tee -a $LOG_FILE
 # Uncomment the next line for debugging the tc command
-#			sudo tc qdisc show dev $INTERFACE >> $TIME_FILE
-			echo -n "parameters SIZE=${size} LOSS=${loss} DELAY=${delay} PROTOCOL=IPv4 SERVICE=HTTP " >> $LOG_FILE
-			echo -n "parameters SIZE=${size} LOSS=${loss} DELAY=${delay} PROTOCOL=IPv4 SERVICE=HTTP " >> $TIME_FILE
+#			sudo tc qdisc show dev $INTERFACE >> $LOGFILE
+			echo "parameters SIZE=${size} LOSS=${loss} DELAY=${delay} PROTOCOL=IPv4 " >> $LOG_FILE
 			echo " "
-			python3 network_stats.py commercialventvac.com 4000 -4 $size 
-                        echo -n "parameters SIZE=${size} LOSS=${loss} DELAY=${delay} PROTOCOL=IPv6 SERVICE=HTTPS " >> $LOG_FILE
-                        echo -n "parameters SIZE=${size} LOSS=${loss} DELAY=${delay} PROTOCOL=IPv6 SERVICE=HTTPS " >> $TIME_FILE
-			python3 network_stats.py commercialventvac.com 4000 -6 $size 
-			egrep "LOSS=| saved " $LOG_FILE | tail -2 
-###############################
-#			echo -n "parameters SIZE=${size} LOSS=${loss} DELAY=${delay} PROTOCOL=IPv4 SERVICE=SCP " >> $LOG_FILE
-#			echo -n "parameters SIZE=${size} LOSS=${loss} DELAY=${delay} PROTOCOL=IPv4 SERVICE=SCP " >> $TIME_FILE
-#			if ! /usr/bin/time -a -o $TIME_FILE -f "%e (sec) elapsed" scp -4 ${REMOTE_4_ADDR}:${size} .; then
-#				echo "wget -4 scp [${REMOTE_ADDR}]:${size} . FAILED" | tee -a $LOG_FILE
-#				echo "`date +"%Y-%M-%d %H:%M:%S"`(0.0 KB/s) - ‘${size}’ saved [0] scp FAILS" | tee -a $LOG_FILE
-#			fi
-#			egrep "LOSS=| saved " $LOG_FILE | tail -2
-###############################
-#			echo " "
-#			echo -n "parameters SIZE=${size} LOSS=${loss} DELAY=${delay} PROTOCOL=IPv6 SERVICE=SCP " >> $LOG_FILE
-#			echo -n "parameters SIZE=${size} LOSS=${loss} DELAY=${delay} PROTOCOL=IPv6 SERVICE=SCP " >> $TIME_FILE
-#			if ! /usr/bin/time -a -o $TIME_FILE -f "%e (sec) elapsed" scp -6 [${REMOTE_6_ADDR}]:${size} .; then
-#				echo "wget -6 scp [${REMOTE_ADDR}]:${size} .  FAILED" | tee -a $LOG_FILE
-#				echo "`date +"%Y-%M-%d %H:%M:%S"`(0.0 KB/s) - ‘${size}’ saved [0] scp FAILS" | tee -a $LOG_FILE
-#			fi
-#                        egrep "LOSS=| saved " $LOG_FILE | tail -2
-###############################
-			echo " "
-			echo -n "parameters SIZE=${size} LOSS=${loss} DELAY=${delay} PROTOCOL=IPv4 SERVICE=FTP " >> $LOG_FILE
-			echo -n "parameters SIZE=${size} LOSS=${loss} DELAY=${delay} PROTOCOL=IPv4 SERVICE=FTP " >> $TIME_FILE
-			if ! /usr/bin/time -a -o $TIME_FILE -f "%e (sec) elapsed" wget --no-check-certificate -4 -a $LOG_FILE ftp://${REMOTE_4_ADDR}/${size} ; then
-				echo "wget --no-check-certificate -4 -a $LOG_FILE ftp://${REMOTE_4_ADDR}/${size} FAILED" | tee -a $LOG_FILE
-				echo "`date +"%Y-%M-%d %H:%M:%S"`(0.0 KB/s) - ‘${size}’ saved [0] ftp FAILS" | tee -a $LOG_FILE
+			if ! python3 network_stats.py commercialventvac.com 4000 -4 $size 2>>${LOG_FILE} >> $RESULTS_FILE; then
+				echo "network_stats.py FAILED!!!!"  >> $LOG_FILE
+				exit 1
 			fi
-                        egrep "LOSS=| saved " $LOG_FILE | tail -2
-###############################
-			echo " "
-			echo -n "parameters SIZE=${size} LOSS=${loss} DELAY=${delay} PROTOCOL=IPv6 SERVICE=FTP " >> $LOG_FILE
-			echo -n "parameters SIZE=${size} LOSS=${loss} DELAY=${delay} PROTOCOL=IPv6 SERVICE=FTP " >> $TIME_FILE
-			if ! /usr/bin/time -a -o $TIME_FILE -f "%e (sec) elapsed" wget --no-check-certificate -6 -a $LOG_FILE ftp://[${REMOTE_6_ADDR}]/${size} ; then
-				echo "wget --no-check-certificate -6 -a $LOG_FILE ftp://[${REMOTE_6_ADDR}]/${size}" | tee -a $LOG_FILE
-                                echo "`date +"%Y-%M-%d %H:%M:%S"`(0.0 KB/s) - ‘${size}’ saved [0] ftp FAILS" | tee -a $LOG_FILE
-                        fi
-                        egrep "LOSS=| saved " $LOG_FILE | tail -2
-###############################
-			echo " "
-			echo -n "parameters SIZE=${size} LOSS=${loss} DELAY=${delay} PROTOCOL=IPv4 SERVICE=FTPS " >> $LOG_FILE
-			echo -n "parameters SIZE=${size} LOSS=${loss} DELAY=${delay} PROTOCOL=IPv4 SERVICE=FTPS " >> $TIME_FILE
-			if ! /usr/bin/time -a -o $TIME_FILE -f "%e (sec) elapsed" wget --no-check-certificate -4 -a $LOG_FILE ftps://${REMOTE_4_ADDR}/${size} ; then
-				echo "wget --no-check-certificate -4 -a $LOG_FILE ftps://${REMOTE_4_ADDR}/${size} FAILED" | tee -a $LOG_FILE
-				echo "`date +"%Y-%M-%d %H:%M:%S"`(0.0 KB/s) - ‘${size}’ saved [0] ftps FAILS" | tee -a $LOG_FILE
+                        echo "parameters SIZE=${size} LOSS=${loss} DELAY=${delay} PROTOCOL=IPv6 " >> $LOG_FILE
+			if ! python3 network_stats.py commercialventvac.com 4000 -6 $size 2>>${LOG_FILE} >> $RESULTS_FILE; then
+				echo "network_stats.py FAILED!!!!"  >> $LOG_FILE
+				exit 1
 			fi
-                        egrep "LOSS=| saved " $LOG_FILE | tail -2
-###############################
-			echo " "
-			echo -n "parameters SIZE=${size} LOSS=${loss} DELAY=${delay} PROTOCOL=IPv6 SERVICE=FTPS " >> $LOG_FILE
-			echo -n "parameters SIZE=${size} LOSS=${loss} DELAY=${delay} PROTOCOL=IPv6 SERVICE=FTPS " >> $TIME_FILE
-			if ! /usr/bin/time -a -o $TIME_FILE -f "%e (sec) elapsed" wget --no-check-certificate  -6 -a $LOG_FILE ftps://[${REMOTE_6_ADDR}]/${size} ; then
-				echo "wget --no-check-certificate  -6 -a $LOG_FILE ftps://[${REMOTE_6_ADDR}]/${size}" | tee -a $LOG_FILE
-                                echo "`date +"%Y-%M-%d %H:%M:%S"`(0.0 KB/s) - ‘${size}’ saved [0] ftps FAILS" | tee -a $LOG_FILE
-                        fi
-                        egrep "LOSS=| saved " $LOG_FILE | tail -2
-###############################
-
-			date; egrep "LOSS=| saved " $LOG_FILE | tail -4
+			tail -2 $LOG_FILE
 		done
 	done
 done
-rm *.data
 # Clean up - remove the classless qdisc
 sudo tc qdisc delete dev $INTERFACE root netem
 echo "Raw results in file $LOG_FILE .  Scrubbed results in $RESULTS_FILE"
-egrep "saved|parameters" $LOG_FILE > $RESULTS_FILE
-echo "RUnning results2MultiIndex.py"
-python3 results2MultiIndex.py $RESULTS_FILE
-
 exit 0
 # Change TCP window size
 # From https://netbeez.net/blog/how-to-adjust-the-tcp-window-size-limit-on-linux/

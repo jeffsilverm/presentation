@@ -28,10 +28,10 @@ def get_delay_loss_percent() -> Tuple[str, str]:
     # I'm not sure where the b' comes from, but it's there.  Since I don't actually
     # use qdisc for anything, I just accept that it is and move on.
     # Also, there is some kruft at the last word.
-    words[0]=words[0][2:]
-    words[-1]=words[-1][:-3]
+    words[0] = words[0][2:]
+    words[-1] = words[-1][:-3]
     assert words[0] == "qdisc", f"First word was {words[0]} not b'qdisc\n{words}"
-    if words[-3][-2:] != "ms" :
+    if words[-3][-2:] != "ms":
         delay_ = "0"
     else:
         delay_ = words[-3][:-2]
@@ -83,8 +83,8 @@ def count_retries(source_addr: str, source_port: int, destination_addr: str,
         return add_hex
 
     assert (lcl_protocol == socket.AF_INET or lcl_protocol == socket.AF_INET6), \
-        ( f"lcl_protocol is {lcl_protocol}, should be {socket.AF_INET} or "
-            f"{socket.AF_INET6}" )
+        (f"lcl_protocol is {lcl_protocol}, should be {socket.AF_INET} or "
+         f"{socket.AF_INET6}")
 
     source_addr_hex: str = str_to_hex_addr(source_addr, s2ha_protocol=lcl_protocol).upper()
     # I came across a case where the source address was 192.168.0.21 and the
@@ -132,6 +132,9 @@ def count_retries(source_addr: str, source_port: int, destination_addr: str,
         assert type(conn_dst_port) == type(destination_port), \
             "The types of conn_dst_port and destination_port did not match"
         port_match: bool = (conn_src_port == source_port) and (conn_dst_port == destination_port)
+        """
+        # This doesn't really tell me anything.  Yes, it doesn't work.
+        # No, it doesn't matter.
         if port_match and not (one_match or two_matches):
             print("Port match fired but neither of the other two matches "
                   f"fired.  Why?\n  src_port={conn_src_port} ({conn_src_port:04X} "
@@ -141,6 +144,7 @@ def count_retries(source_addr: str, source_port: int, destination_addr: str,
                   f"Local address={source_addr_hex} " +
                   f"Remote_address={dest_addr_hex} \n" +
                   connections[0], "\n", conn, "\n", file=sys.stderr)
+        """
         if one_match or two_matches or port_match:
             count = int(fields[6])
             break
@@ -206,7 +210,7 @@ if "__main__" == __name__:
                           f"remote address is {remote_addr} remote_port is {remote_port}" \
                           " protocol is {protocol}"
     print(f"Made a connection to remote address {remote_addr} remote_port "
-          f"{remote_port} protocol is {protocol}")
+          f"{remote_port} protocol is {protocol}", file=sys.stderr)
 
     try:
         if s.family == socket.AF_INET:
@@ -233,9 +237,12 @@ if "__main__" == __name__:
             print("Caught AssertionError from count_retries", file=sys.stderr)
             c2 = 0
         delay, loss_percent = get_delay_loss_percent()
-        print(f"Retries: {c2 - c1} "
-              f"Elapsed time: {(end_time - start_time)} "
-              f"Delay: {delay} loss percent: {loss_percent} size: {size} bytes")
+        elapsed_time: datetime.timedelta = (end_time - start_time)
+        print(f"Retries: {c2-c1} "
+              f"Elapsed time: {elapsed_time} "
+              f"Delay: {delay} loss percent: {loss_percent} size: {size} bytes "
+              f"data rate: {float(size)/elapsed_time.total_seconds()} "
+              f"bytes/sec protocol: IPv{protocol_str[1:]}")
     except FloatingPointError as e:
         print("Something went wrong somewhere " + str(e))
     s.close()
