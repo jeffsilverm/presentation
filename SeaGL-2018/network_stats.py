@@ -182,6 +182,7 @@ if "__main__" == __name__:
     # s = socket.create_connection(dest_tuple, 1.5, ("0", 0))
     first_attempt = True
     s = None
+    name_error = False
     while first_attempt:
         s = socket.socket(family=protocol, type=socket.SOCK_STREAM)
         assert s.family == protocol, "socket.create_connection used the wrong protocol" \
@@ -204,8 +205,17 @@ if "__main__" == __name__:
                 # https://docs.python.org/3/library/socket.html#socket-families
                 remote_addr = "2607:f298:5:115f::23:e397"  # Commercialventvac.com
                 dest_tuple: Tuple[str, int, int, int] = (remote_addr, int(remote_port), 0, 0)
-        if s is not None:  # then we succeeded in making a connection on either the first or second attempt
-            break
+        try:
+            if s is not None:  # then we succeeded in making a connection on either the first or second attempt
+                break
+        except NameError as n:
+            if not name_error:
+                print("Not sure how this happened, but s does not exist (NameError)." 
+                      "Try again\n"  + str(n), file=sys.stderr)
+                name_error = True
+            else:
+                print("Still not sure how this happened - again!" + str(n))
+                sys.exit(1)
     assert s is not None, "Just could not establish a connection" + \
                           f"remote address is {remote_addr} remote_port is {remote_port}" \
                           " protocol is {protocol}"
