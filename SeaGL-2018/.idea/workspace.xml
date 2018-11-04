@@ -5,11 +5,10 @@
     <option name="CUSTOM_SCOPE_NAME" value="Current File" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="aa93e885-664d-4342-af57-438185dc3490" name="Default Changelist" comment="Runs without any errors.  That doesn't mean it's right.&#10;&#10;Tomorrow, test with tc.">
+    <list default="true" id="aa93e885-664d-4342-af57-438185dc3490" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/network_stats.py" beforeDir="false" afterPath="$PROJECT_DIR$/network_stats.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/run_network_stats.sh" beforeDir="false" afterPath="$PROJECT_DIR$/run_network_stats.sh" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/simple-server.py" beforeDir="false" afterPath="$PROJECT_DIR$/simple-server.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -28,20 +27,20 @@
     <session id="-1331518775">
       <usages-collector id="statistics.lifecycle.project">
         <counts>
-          <entry key="project.closed" value="27" />
+          <entry key="project.closed" value="29" />
           <entry key="project.open.time.0" value="1" />
           <entry key="project.open.time.2" value="1" />
           <entry key="project.open.time.4" value="10" />
-          <entry key="project.open.time.5" value="10" />
+          <entry key="project.open.time.5" value="11" />
           <entry key="project.open.time.6" value="7" />
-          <entry key="project.opened" value="29" />
+          <entry key="project.opened" value="30" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.open">
         <counts>
           <entry key="pstat" value="2" />
           <entry key="py" value="36" />
-          <entry key="sh" value="5" />
+          <entry key="sh" value="6" />
           <entry key="txt" value="1" />
         </counts>
       </usages-collector>
@@ -49,21 +48,21 @@
         <counts>
           <entry key="Python Console" value="7" />
           <entry key="dummy" value="2" />
-          <entry key="py" value="23589" />
-          <entry key="sh" value="151" />
-          <entry key="txt" value="1556" />
+          <entry key="py" value="24004" />
+          <entry key="sh" value="157" />
+          <entry key="txt" value="1714" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.edit">
         <counts>
-          <entry key="Bash" value="75" />
-          <entry key="PLAIN_TEXT" value="1558" />
-          <entry key="Python" value="23672" />
+          <entry key="Bash" value="81" />
+          <entry key="PLAIN_TEXT" value="1716" />
+          <entry key="Python" value="24087" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.open">
         <counts>
-          <entry key="Bash" value="4" />
+          <entry key="Bash" value="5" />
           <entry key="PLAIN_TEXT" value="2" />
           <entry key="Profiler Session" value="2" />
           <entry key="Python" value="36" />
@@ -78,20 +77,7 @@
     </session>
   </component>
   <component name="FileEditorManager">
-    <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/network_stats.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="183">
-              <caret line="136" column="32" selection-start-line="136" selection-start-column="32" selection-end-line="136" selection-end-column="32" />
-              <folding>
-                <element signature="e#100#115#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-    </leaf>
+    <leaf SIDE_TABS_SIZE_LIMIT_KEY="300" />
   </component>
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
@@ -119,6 +105,7 @@
       <find>f&quot;</find>
       <find>protocol_str</find>
       <find>Made a</find>
+      <find>s is</find>
     </findStrings>
     <replaceStrings>
       <replace>http</replace>
@@ -144,6 +131,7 @@
         <option value="$USER_HOME$/python/nbmdt/network.py" />
         <option value="$PROJECT_DIR$/simple-server.py" />
         <option value="$PROJECT_DIR$/network_stats.py" />
+        <option value="$PROJECT_DIR$/run_network_stats.sh" />
       </list>
     </option>
   </component>
@@ -154,10 +142,10 @@
     <sorting>DEFINITION_ORDER</sorting>
   </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="1487" />
-    <option name="y" value="489" />
+    <option name="x" value="1459" />
+    <option name="y" value="251" />
     <option name="width" value="1711" />
-    <option name="height" value="495" />
+    <option name="height" value="761" />
   </component>
   <component name="ProjectInspectionProfilesVisibleTreeState">
     <entry key="Project Default">
@@ -182,23 +170,23 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="Scope">
-        <subPane subId="Scope 'Project Files'; set:Project Files; class com.intellij.psi.search.scope.ProjectFilesScope">
-          <expand>
-            <path>
-              <item name="SeaGL-2018" type="3d21c010:ScopeViewTreeModel$ProjectNode" />
-              <item name="" type="442cc68d:ScopeViewTreeModel$RootNode" />
-            </path>
-          </expand>
-          <select />
-        </subPane>
-      </pane>
       <pane id="ProjectPane">
         <subPane>
           <expand>
             <path>
               <item name="SeaGL-2018" type="b2602c69:ProjectViewProjectNode" />
               <item name="SeaGL-2018" type="462c0819:PsiDirectoryNode" />
+            </path>
+          </expand>
+          <select />
+        </subPane>
+      </pane>
+      <pane id="Scope">
+        <subPane subId="Scope 'Project Files'; set:Project Files; class com.intellij.psi.search.scope.ProjectFilesScope">
+          <expand>
+            <path>
+              <item name="SeaGL-2018" type="3d21c010:ScopeViewTreeModel$ProjectNode" />
+              <item name="" type="442cc68d:ScopeViewTreeModel$RootNode" />
             </path>
           </expand>
           <select />
@@ -324,6 +312,9 @@
       <module name="SeaGL-2018" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
       <option name="SDK_HOME" value="" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
       <option name="IS_MODULE_SDK" value="true" />
@@ -452,27 +443,33 @@
       <option name="project" value="LOCAL" />
       <updated>1541188713515</updated>
     </task>
-    <option name="localTasksCounter" value="10" />
+    <task id="LOCAL-00010" summary="There was a run which raised a NameError exception&#10;&#10;So I wrote a handler for it, which includes detecting what might be a&#10;loop.">
+      <created>1541233235980</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1541233235980</updated>
+    </task>
+    <option name="localTasksCounter" value="11" />
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="1487" y="12" width="1711" height="972" extended-state="0" />
-    <editor active="true" />
+    <frame x="1489" y="132" width="1711" height="761" extended-state="0" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.14882033" />
+      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.14640048" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" weight="0.6545454" />
       <window_info anchor="bottom" id="Run" order="2" weight="0.599016" />
-      <window_info active="true" anchor="bottom" id="Debug" order="3" visible="true" weight="0.30750307" />
+      <window_info anchor="bottom" id="Debug" order="3" sideWeight="0.4996975" weight="0.4152824" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="bottom" id="TODO" order="6" />
       <window_info anchor="bottom" id="Docker" order="7" show_stripe_button="false" />
       <window_info anchor="bottom" id="Version Control" order="8" weight="0.32918552" />
       <window_info anchor="bottom" id="Database Changes" order="9" show_stripe_button="false" />
-      <window_info anchor="bottom" id="Event Log" order="10" side_tool="true" />
+      <window_info active="true" anchor="bottom" id="Event Log" order="10" sideWeight="0.5003025" side_tool="true" visible="true" weight="0.6295681" />
       <window_info anchor="bottom" id="Terminal" order="11" />
       <window_info anchor="bottom" id="Python Console" order="12" weight="0.4071341" />
       <window_info anchor="bottom" id="Inspection Results" order="13" weight="0.32918552" />
@@ -527,7 +524,8 @@
     <MESSAGE value="Added a little more address debugging&#10;&#10;Tomorrow, test with tc." />
     <MESSAGE value="Uses tc to get the queuing discipline parameters" />
     <MESSAGE value="Works with both IPv4 and IPv6 on jeffs-desktop" />
-    <option name="LAST_COMMIT_MESSAGE" value="Works with both IPv4 and IPv6 on jeffs-desktop" />
+    <MESSAGE value="There was a run which raised a NameError exception&#10;&#10;So I wrote a handler for it, which includes detecting what might be a&#10;loop." />
+    <option name="LAST_COMMIT_MESSAGE" value="There was a run which raised a NameError exception&#10;&#10;So I wrote a handler for it, which includes detecting what might be a&#10;loop." />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -549,7 +547,7 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/network_stats.py</url>
-          <line>246</line>
+          <line>263</line>
           <option name="timeStamp" value="43" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
@@ -564,7 +562,7 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/network_stats.py</url>
-          <line>240</line>
+          <line>257</line>
           <option name="timeStamp" value="49" />
         </line-breakpoint>
       </breakpoints>
@@ -784,16 +782,20 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="345">
           <caret line="23" column="47" selection-start-line="23" selection-start-column="47" selection-end-line="23" selection-end-column="47" />
-          <folding>
-            <element signature="e#104#117#0" expanded="true" />
-          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/run_network_stats.sh">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="90">
+          <caret line="6" lean-forward="true" selection-start-line="6" selection-end-line="6" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/network_stats.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="183">
-          <caret line="136" column="32" selection-start-line="136" selection-start-column="32" selection-end-line="136" selection-end-column="32" />
+        <state relative-caret-position="330">
+          <caret line="212" column="27" selection-start-line="212" selection-start-column="27" selection-end-line="212" selection-end-column="27" />
           <folding>
             <element signature="e#100#115#0" expanded="true" />
           </folding>
