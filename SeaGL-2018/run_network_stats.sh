@@ -4,6 +4,9 @@
 # down load files for different combinations of packet loss
 # rate, network delay, and file size.
 
+
+trap "sudo tc qdisc delete dev $INTERFACE root netem" EXIT ERR
+
 network_em() {
   command=$1	# add, change, remove
   P=$2
@@ -84,12 +87,10 @@ for size in 1000 10000 100000 1000000; do
 			echo " "
 			if ! python3 network_stats.py commercialventvac.com 4000 -4 $size 2>>${LOG_FILE} >> $RESULTS_FILE; then
 				echo "network_stats.py FAILED!!!!"  >> $LOG_FILE
-				exit 1
 			fi
-                        echo "parameters SIZE=${size} LOSS=${loss} DELAY=${delay} PROTOCOL=IPv6 " >> $LOG_FILE
+            echo "parameters SIZE=${size} LOSS=${loss} DELAY=${delay} PROTOCOL=IPv6 " >> $LOG_FILE
 			if ! python3 network_stats.py commercialventvac.com 4000 -6 $size 2>>${LOG_FILE} >> $RESULTS_FILE; then
 				echo "network_stats.py FAILED!!!!"  >> $LOG_FILE
-				exit 1
 			fi
 			tail -2 $LOG_FILE
 		done

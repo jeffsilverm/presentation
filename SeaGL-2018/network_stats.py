@@ -205,6 +205,13 @@ if "__main__" == __name__:
                 # https://docs.python.org/3/library/socket.html#socket-families
                 remote_addr = "2607:f298:5:115f::23:e397"  # Commercialventvac.com
                 dest_tuple: Tuple[str, int, int, int] = (remote_addr, int(remote_port), 0, 0)
+        except TimeoutError as t:
+            if first_attempt:
+                print("Connection timeout error - first attempt" + str(t), file=sys.stderr)
+            else:
+                print("Connection timeout error - oh well" + str(t), file=sys.stderr)
+                sys.exit(1)
+            first_attempt = False
         try:
             if s is not None:  # then we succeeded in making a connection on either the first or second attempt
                 break
