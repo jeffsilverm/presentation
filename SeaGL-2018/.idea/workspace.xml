@@ -2,8 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="1ac34605-2ea7-4763-a5dd-a843fbb0d211" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/network_stats_result_2_csv.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/network_stats_result_2_csv.py" beforeDir="false" afterPath="$PROJECT_DIR$/network_stats_result_2_csv.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -22,20 +21,20 @@
       <usages-collector id="statistics.lifecycle.project">
         <counts>
           <entry key="project.closed" value="3" />
-          <entry key="project.open.time.0" value="2" />
-          <entry key="project.opened" value="2" />
+          <entry key="project.open.time.0" value="3" />
+          <entry key="project.opened" value="3" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.open">
         <counts>
-          <entry key="py" value="2" />
+          <entry key="py" value="3" />
           <entry key="sh" value="1" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.open">
         <counts>
           <entry key="Bash" value="1" />
-          <entry key="Python" value="2" />
+          <entry key="Python" value="3" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.vcs.git.usages">
@@ -45,18 +44,38 @@
       </usages-collector>
       <usages-collector id="statistics.file.extensions.edit">
         <counts>
-          <entry key="py" value="152" />
+          <entry key="dummy" value="1" />
+          <entry key="py" value="2278" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.edit">
         <counts>
-          <entry key="Python" value="152" />
+          <entry key="PLAIN_TEXT" value="1" />
+          <entry key="Python" value="2278" />
         </counts>
       </usages-collector>
+      <usages-collector id="statistics.js.language.service.starts" />
     </session>
   </component>
   <component name="FileEditorManager">
-    <leaf />
+    <leaf>
+      <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/network_stats_result_2_csv.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="320">
+              <caret line="31" column="21" selection-start-line="31" selection-start-column="21" selection-end-line="31" selection-end-column="21" />
+              <folding>
+                <element signature="e#46#56#0" expanded="true" />
+                <marker date="1541367523937" expanded="true" signature="138:139" ph="..." />
+                <marker date="1541367523937" expanded="true" signature="138:423" ph="..." />
+                <marker date="1541367523937" expanded="true" signature="238:422" ph="..." />
+                <marker date="1541367523937" expanded="true" signature="238:423" ph="..." />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+    </leaf>
   </component>
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
@@ -282,12 +301,13 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="1631" y="34" width="1569" height="1039" extended-state="0" />
+    <editor active="true" />
     <layout>
-      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.18332231" />
+      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.0033090669" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
-      <window_info anchor="bottom" id="Find" order="1" />
+      <window_info active="true" anchor="bottom" id="Find" order="1" sideWeight="0.4996691" visible="true" weight="0.32954547" />
       <window_info anchor="bottom" id="Run" order="2" weight="0.40681818" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.5681818" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
@@ -296,7 +316,7 @@
       <window_info anchor="bottom" id="Docker" order="7" show_stripe_button="false" />
       <window_info anchor="bottom" id="Version Control" order="8" weight="0.32954547" />
       <window_info anchor="bottom" id="Database Changes" order="9" show_stripe_button="false" />
-      <window_info anchor="bottom" id="Event Log" order="10" side_tool="true" visible="true" weight="0.32954547" />
+      <window_info anchor="bottom" id="Event Log" order="10" sideWeight="0.5003309" side_tool="true" weight="0.32954547" />
       <window_info anchor="bottom" id="Terminal" order="11" />
       <window_info anchor="bottom" id="Python Console" order="12" />
       <window_info anchor="bottom" id="Messages" order="13" />
@@ -397,10 +417,14 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/network_stats_result_2_csv.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="135">
-          <caret line="9" lean-forward="true" selection-start-line="9" selection-end-line="9" />
+        <state relative-caret-position="320">
+          <caret line="31" column="21" selection-start-line="31" selection-start-column="21" selection-end-line="31" selection-end-column="21" />
           <folding>
-            <element signature="e#46#61#0" expanded="true" />
+            <element signature="e#46#56#0" expanded="true" />
+            <marker date="1541367523937" expanded="true" signature="138:139" ph="..." />
+            <marker date="1541367523937" expanded="true" signature="138:423" ph="..." />
+            <marker date="1541367523937" expanded="true" signature="238:422" ph="..." />
+            <marker date="1541367523937" expanded="true" signature="238:423" ph="..." />
           </folding>
         </state>
       </provider>
