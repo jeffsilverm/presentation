@@ -23,8 +23,8 @@ def get_delay_loss_percent() -> Tuple[float, float]:
     """
     output: bytes = results.stdout
     words = str(output).split()
-    for k in range(len(words)):
-        words[k] = str(words[k])
+    for k7 in range(len(words)):
+        words[k7] = str(words[k7])
     # I'm not sure where the b' comes from, but it's there.  Since I don't actually
     # use qdisc for anything, I just accept that it is and move on.
     # Also, there is some kruft at the last word.
@@ -106,7 +106,7 @@ def count_retries(source_addr: str, source_port: int, destination_addr: str,
         return add_hex
 
     assert (lcl_protocol == socket.AF_INET or lcl_protocol == socket.AF_INET6), \
-        (f"lcl_protocol is {lcl_protocol}, should be {socket.AF_INET} or "
+        (f"lcl_protocol is {str(lcl_protocol)}, should be {socket.AF_INET} or "
          f"{socket.AF_INET6}")
 
     source_addr_hex: str = str_to_hex_addr(source_addr, s2ha_protocol=lcl_protocol).upper()
@@ -193,10 +193,12 @@ def report(retry_ctr: int, elapsed: float, delay_: float, loss: float,
     # 'testing      12354'
     # >>>
     # git tag MONDAY
+    # The elapsed time needs more than 2 decimals.  The data rate varies so wildly
+    # that it needs scientific notation.
     print(f"Retries: {retry_ctr:5d} "
-          f"Elapsed time: {elapsed:8.2f} "
+          f"Elapsed time: {elapsed:12.8f} "
           f"Delay: {delay_:6.2f} loss percent: {loss:6.2f} size: {size_bytes:10d} bytes "
-          f"data rate: {rate:10.0f} "
+          f"data rate: {rate:14.6e} "
           f"bytes/sec protocol: IPv{proto}")
 
 
@@ -220,6 +222,10 @@ if "__main__" == __name__:
         # The extra information is flowinfo and  scopeid.  See
         # https://docs.python.org/3/library/socket.html#socket-families
         dest_tuple: Tuple[str, int, int, int] = (remote_addr, int(remote_port), 0, 0)
+    # Type hints
+    delay: float
+    loss_percent: float
+    delay, loss_percent = get_delay_loss_percent()
     # Starting in Python 3.2, create can use a specific source address/port pair
     # Not sure how to tell which protocol was selected
     # s = socket.create_connection(dest_tuple, 1.5, ("0", 0))
@@ -230,7 +236,7 @@ if "__main__" == __name__:
         while first_attempt:
             s = socket.socket(family=protocol, type=socket.SOCK_STREAM)
             assert s.family == protocol, "socket.create_connection used the wrong protocol" \
-                                         f"Should have been {protocol} was actually {s.family}"
+                                         f"Should have been {str(protocol)} was actually {str(s.family)}"
             try:
                 s.connect(dest_tuple)
             except ConnectionRefusedError as c:
@@ -254,6 +260,8 @@ if "__main__" == __name__:
                     print("Connection timeout error - first attempt" + str(t), file=sys.stderr)
                 else:
                     print("Connection timeout error - oh well" + str(t), file=sys.stderr)
+                    report(retry_ctr=10000000, elapsed=100000.0, delay_=delay, loss=loss_percent,
+                           size_bytes=size, rate=0.0, proto=protocol_str[-1:])
                     sys.exit(1)
                 first_attempt = False
             try:
@@ -261,17 +269,19 @@ if "__main__" == __name__:
                     break
             except NameError as n:
                 if not name_error:
-                    print("Not sure how this happened, but s does not exist (NameError)."
+                    print("Not sure how this happened, but s does not exist (NameError). "
                           "Try again\n" + str(n), file=sys.stderr)
                     name_error = True
                 else:
-                    print("Still not sure how this happened - again!" + str(n))
+                    print("Still not sure how this happened - again!" + str(n), file=sys.stderr)
+                    report(retry_ctr=10000000, elapsed=100000.0, delay_=delay, loss=loss_percent,
+                           size_bytes=size, rate=0.0, proto=protocol_str[-1:])
                     sys.exit(1)
         assert s is not None, "Just could not establish a connection" + \
                               f"remote address is {remote_addr} remote_port is {remote_port}" \
-                              " protocol is {protocol}"
+                              f" protocol is {str(protocol)}"
         print(f"Made a connection to remote address {remote_addr} remote_port "
-              f"{remote_port} protocol is {protocol}", file=sys.stderr)
+              f"{remote_port} protocol is {str(protocol)}", file=sys.stderr)
 
         if s.family == socket.AF_INET:
             nom_src_addr, nom_src_port = s.getsockname()
@@ -283,7 +293,7 @@ if "__main__" == __name__:
             c1: int = count_retries(nom_src_addr, nom_src_port, nom_dst_addr,
                                     nom_dst_port, lcl_protocol=protocol)
         except AssertionError as a:
-            print("Caught AssertionError from count_retries", file=sys.stderr)
+            print("Caught AssertionError from count_retries c1=0" + str(a), file=sys.stderr)
             c1 = 0
         assert isinstance(size, int), f"Size should be int, is {type(size)}"
         data = size * b"@"
@@ -294,18 +304,17 @@ if "__main__" == __name__:
             c2: int = count_retries(nom_src_addr, nom_src_port, nom_dst_addr,
                                     nom_dst_port, lcl_protocol=protocol)
         except AssertionError as a:
-            print("Caught AssertionError from count_retries", file=sys.stderr)
+            print("Caught AssertionError from count_retries c2=0" + str(a), file=sys.stderr)
             c2 = 0
-        # Type hints
-        delay: float
-        loss_percent: float
-        delay, loss_percent = get_delay_loss_percent()
         elapsed_time: float = (end_time - start_time).total_seconds()
         # protocol_str is either -4 or -6
         report(retry_ctr=c2 - c1, elapsed=elapsed_time, delay_=delay,
                loss=loss_percent,
                size_bytes=size, rate=float(size) / elapsed_time,
                proto=protocol_str[-1:])
+    except KeyboardInterrupt as k:
+        print("Operator hit Control-C", file=sys.stderr)
+        sys.exit(100)
     except Exception as e:
         # Hail Mary!
         print("Something went wrong somewhere " + str(e), file=sys.stderr)
