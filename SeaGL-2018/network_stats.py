@@ -75,7 +75,8 @@ def global_tcp_retries() -> int:
             try:
                 number = line.split()[1]
             except ValueError as v:
-                print(f"In global_tcp_retries: tried to convert {line} to an int and failed", file=sys.stderr)
+                print(f"In global_tcp_retries: tried to convert {line}"
+                      "to an int and failed. " + str(v), file=sys.stderr)
                 number = "0"
             break
 
@@ -187,7 +188,7 @@ def count_retries(source_addr: str, source_port: int, destination_addr: str,
     else:
         raise AssertionError(
             f"The connection was not found in the TCP connection table.  " +
-            f"dest_str={dest_str}, source_str={source_str}" +
+            f"dest_str={dest_str}, source_str={source_str}\n" +
             "\n".join(connections))
 
     return count
@@ -248,7 +249,7 @@ if "__main__" == __name__:
     first_attempt = True
     s = None
     name_error = False
-    start_time = datetime.datetime.now()        # This is here as a safety measure.
+    start_time = datetime.datetime.now()  # This is here as a safety measure.
     try:
         while first_attempt:
             s = socket.socket(family=protocol, type=socket.SOCK_STREAM)
@@ -311,7 +312,7 @@ if "__main__" == __name__:
             c1: int = count_retries(nom_src_addr, nom_src_port, nom_dst_addr,
                                     nom_dst_port, lcl_protocol=protocol)
         except AssertionError as a:
-            print("Caught AssertionError from count_retries c1=0" + str(a), file=sys.stderr)
+            print("Caught AssertionError from count_retries c1=0\n" + str(a), file=sys.stderr)
             c1 = 0
         assert isinstance(size, int), f"Size should be int, is {type(size)}"
         data = size * b"@"
@@ -323,7 +324,7 @@ if "__main__" == __name__:
             c2: int = count_retries(nom_src_addr, nom_src_port, nom_dst_addr,
                                     nom_dst_port, lcl_protocol=protocol)
         except AssertionError as a:
-            print("Caught AssertionError from count_retries c2=0" + str(a), file=sys.stderr)
+            print("Caught AssertionError from count_retries c2=0\n" + str(a), file=sys.stderr)
             c2 = 0
         s.close()
         # Defer gathering the end time until now.  Some of the socket calls do not block
@@ -348,4 +349,3 @@ if "__main__" == __name__:
                loss=loss_percent, size_bytes=size,
                rate=0.0, proto=protocol_str[-1:])
         sys.exit(1)
-
