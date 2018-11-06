@@ -87,10 +87,12 @@ for size in 1000 10000 100000 1000000; do
 			echo " "
 			if ! python3 network_stats.py commercialventvac.com 4000 -4 $size 2>>${LOG_FILE} >> $RESULTS_FILE; then
 				echo "network_stats.py FAILED!!!!"  >> $LOG_FILE
+				echo "FIXUP last line? ${size} ${loss} ${delay} IPv4 !" >> $RESULTS_FILE
 			fi
             echo "parameters SIZE=${size} LOSS=${loss} DELAY=${delay} PROTOCOL=IPv6 " >> $LOG_FILE
 			if ! python3 network_stats.py commercialventvac.com 4000 -6 $size 2>>${LOG_FILE} >> $RESULTS_FILE; then
 				echo "network_stats.py FAILED!!!!"  >> $LOG_FILE
+				echo "FIXUP last line? ${size} ${loss} ${delay} IPv6 6!" >> $RESULTS_FILE
 			fi
 			tail -2 $LOG_FILE
 		done

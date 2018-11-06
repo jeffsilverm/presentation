@@ -12,7 +12,7 @@ from typing import Tuple
 REPETITIONS = 10
 
 
-def get_delay_loss_percent() -> Tuple[str, str]:
+def get_delay_loss_percent() -> Tuple[float, float]:
     """Get the delay in the msec and the loss rate as a percent """
     results: subprocess.CompletedProcess = \
         subprocess.run(["sudo", "tc", "qdisc", "show", "dev", "enp0s25"],
@@ -32,18 +32,41 @@ def get_delay_loss_percent() -> Tuple[str, str]:
     words[-1] = words[-1][:-3]
     assert words[0] == "qdisc", f"First word was {words[0]} not b'qdisc\n{words}"
     if words[-3][-2:] != "ms":
-        delay_ = "0"
+        delay_ = 0.0  # milliseconds
     else:
-        delay_ = words[-3][:-2]
+        delay_ = float(words[-3][:-2])
     # If the word loss is not there, then the loss is 0 msec. tc is
     # inconsistent that way
     if "loss" not in words[-2]:
-        loss_percent_ = "0.0"
+        loss_percent_ = 0.0
     elif words[-1][-1:] == "%":
-        loss_percent_ = words[-1][:-1]
+        loss_percent_ = float(words[-1][:-1])
     else:
         raise AssertionError(f"words[-1] is {words[-1]} and I don't get it")
     return delay_, loss_percent_
+
+
+def global_tcp_retries() -> int:
+    """
+    This returns the number of TCP retransmitted segments from the netstat -s
+    command.  I'm not convinced that this is a good measure.  But the perfect
+    is the enemy of the good
+    :return: int    number of retransmitted segments
+    """
+
+    results: subprocess.CompletedProcess = subprocess.run(["netstat", "-s"], stdout=subprocess.PIPE)
+    s0: bytes = results.stdout
+    number = "0"  # in case segments retransmitted is not found
+    for lb in s0.split(b"\n"):
+        line = str(lb)
+        # [jeffs@smalldell ~]$ netstat -s | fgrep "segments retransmitted"
+        #     118583 segments retransmitted
+        # [jeffs@smalldell ~]$
+        if "segments retransmitted" in line:
+            number = line.split()[0]
+            break
+
+    return int(number)
 
 
 def count_retries(source_addr: str, source_port: int, destination_addr: str,
@@ -98,8 +121,8 @@ def count_retries(source_addr: str, source_port: int, destination_addr: str,
 
     tcp_table_filename: str = (
         "/proc/net/tcp" if lcl_protocol == socket.AF_INET else "/proc/net/tcp6")
-    with open(tcp_table_filename, "r") as t:
-        connections = t.readlines()
+    with open(tcp_table_filename, "r") as tt:
+        connections = tt.readlines()
 
     # Linear search to find our connection
     # The documentation on the contents of /proc/net/tcp is at
@@ -157,6 +180,24 @@ def count_retries(source_addr: str, source_port: int, destination_addr: str,
     return count
 
 
+def report(retry_ctr: int, elapsed: float, delay_: float, loss: float,
+           size_bytes: int, rate: float, proto: str) -> None:
+    if len(proto) != 1:
+        raise ValueError(f"len(proto) should be 1, is actually {len(proto)}")
+    # >>> f"testing {W:10.2f}"
+    # 'testing      34.34'
+    # >>> E=12354
+    # >>> f"testing {E:10d}"
+    # 'testing      12354'
+    # >>>
+    # git tag MONDAY
+    print(f"Retries: {retry_ctr:5d} "
+          f"Elapsed time: {elapsed:8.2f} "
+          f"Delay: {delay_:6.2f} loss percent: {loss:6.2f} size: {size_bytes:10d} bytes "
+          f"data rate: {rate:10.0f} "
+          f"bytes/sec protocol: IPv{proto}")
+
+
 if "__main__" == __name__:
     if len(sys.argv) > 2:
         remote_addr = sys.argv[1]
@@ -183,53 +224,53 @@ if "__main__" == __name__:
     first_attempt = True
     s = None
     name_error = False
-    while first_attempt:
-        s = socket.socket(family=protocol, type=socket.SOCK_STREAM)
-        assert s.family == protocol, "socket.create_connection used the wrong protocol" \
-                                     f"Should have been {protocol} was actually {s.family}"
-        try:
-            s.connect(dest_tuple)
-        except ConnectionRefusedError as c:
-            print(f"The socket connect call failed to connect to {dest_tuple}.  "
-                  f"Try running nc {protocol_str} -k -l {remote_port} on {remote_addr} \n{str(c)}\n",
-                  file=sys.stderr)
-            sys.exit(1)
-        except socket.gaierror as s:
-            print(f"Name or service not known: {remote_addr}\nTry again with"
-                  "hard coded remote address", file=sys.stderr)
-            if protocol == socket.AF_INET:
-                remote_addr = "208.97.189.29"  # Commercialventvac.com
-                dest_tuple: Tuple[str, int] = (remote_addr, int(remote_port))
-            else:
-                # The extra information is flowinfo and  scopeid.  See
-                # https://docs.python.org/3/library/socket.html#socket-families
-                remote_addr = "2607:f298:5:115f::23:e397"  # Commercialventvac.com
-                dest_tuple: Tuple[str, int, int, int] = (remote_addr, int(remote_port), 0, 0)
-        except TimeoutError as t:
-            if first_attempt:
-                print("Connection timeout error - first attempt" + str(t), file=sys.stderr)
-            else:
-                print("Connection timeout error - oh well" + str(t), file=sys.stderr)
-                sys.exit(1)
-            first_attempt = False
-        try:
-            if s is not None:  # then we succeeded in making a connection on either the first or second attempt
-                break
-        except NameError as n:
-            if not name_error:
-                print("Not sure how this happened, but s does not exist (NameError)." 
-                      "Try again\n"  + str(n), file=sys.stderr)
-                name_error = True
-            else:
-                print("Still not sure how this happened - again!" + str(n))
-                sys.exit(1)
-    assert s is not None, "Just could not establish a connection" + \
-                          f"remote address is {remote_addr} remote_port is {remote_port}" \
-                          " protocol is {protocol}"
-    print(f"Made a connection to remote address {remote_addr} remote_port "
-          f"{remote_port} protocol is {protocol}", file=sys.stderr)
-
     try:
+        while first_attempt:
+            s = socket.socket(family=protocol, type=socket.SOCK_STREAM)
+            assert s.family == protocol, "socket.create_connection used the wrong protocol" \
+                                         f"Should have been {protocol} was actually {s.family}"
+            try:
+                s.connect(dest_tuple)
+            except ConnectionRefusedError as c:
+                print(f"The socket connect call failed to connect to {dest_tuple}.  "
+                      f"Try running nc {protocol_str} -k -l {remote_port} on {remote_addr} \n{str(c)}\n",
+                      file=sys.stderr)
+                sys.exit(1)
+            except socket.gaierror as s:
+                print(f"Name or service not known: {remote_addr}\nTry again with"
+                      "hard coded remote address", file=sys.stderr)
+                if protocol == socket.AF_INET:
+                    remote_addr = "208.97.189.29"  # Commercialventvac.com
+                    dest_tuple: Tuple[str, int] = (remote_addr, int(remote_port))
+                else:
+                    # The extra information is flowinfo and  scopeid.  See
+                    # https://docs.python.org/3/library/socket.html#socket-families
+                    remote_addr = "2607:f298:5:115f::23:e397"  # Commercialventvac.com
+                    dest_tuple: Tuple[str, int, int, int] = (remote_addr, int(remote_port), 0, 0)
+            except TimeoutError as t:
+                if first_attempt:
+                    print("Connection timeout error - first attempt" + str(t), file=sys.stderr)
+                else:
+                    print("Connection timeout error - oh well" + str(t), file=sys.stderr)
+                    sys.exit(1)
+                first_attempt = False
+            try:
+                if s is not None:  # then we succeeded in making a connection on either the first or second attempt
+                    break
+            except NameError as n:
+                if not name_error:
+                    print("Not sure how this happened, but s does not exist (NameError)."
+                          "Try again\n" + str(n), file=sys.stderr)
+                    name_error = True
+                else:
+                    print("Still not sure how this happened - again!" + str(n))
+                    sys.exit(1)
+        assert s is not None, "Just could not establish a connection" + \
+                              f"remote address is {remote_addr} remote_port is {remote_port}" \
+                              " protocol is {protocol}"
+        print(f"Made a connection to remote address {remote_addr} remote_port "
+              f"{remote_port} protocol is {protocol}", file=sys.stderr)
+
         if s.family == socket.AF_INET:
             nom_src_addr, nom_src_port = s.getsockname()
             nom_dst_addr, nom_dst_port = s.getpeername()
@@ -253,13 +294,23 @@ if "__main__" == __name__:
         except AssertionError as a:
             print("Caught AssertionError from count_retries", file=sys.stderr)
             c2 = 0
+        # Type hints
+        delay: float
+        loss_percent: float
         delay, loss_percent = get_delay_loss_percent()
-        elapsed_time: datetime.timedelta = (end_time - start_time)
-        print(f"Retries: {c2-c1} "
-              f"Elapsed time: {elapsed_time} "
-              f"Delay: {delay} loss percent: {loss_percent} size: {size} bytes "
-              f"data rate: {float(size)/elapsed_time.total_seconds()} "
-              f"bytes/sec protocol: IPv{protocol_str[1:]}")
-    except FloatingPointError as e:
-        print("Something went wrong somewhere " + str(e))
+        elapsed_time: float = (end_time - start_time).total_seconds()
+        report(retry_ctr=c2 - c1, elapsed=elapsed_time, delay_=delay,
+               loss=loss_percent,
+               size_bytes=size, rate=float(size) / elapsed_time,
+               proto=protocol[-1:])
+    except Exception as e:
+        # Hail Mary!
+        print("Something went wrong somewhere " + str(e), file=sys.stderr)
+        # Type hints
+        delay: float
+        loss_percent: float
+        delay, loss_percent = get_delay_loss_percent()
+        report(retry_ctr=1000000000, elapsed=1000000000.0, delay_=delay,
+               loss=loss_percent, size_bytes=size,
+               rate=0.0, proto=protocol[-1:])
     s.close()
