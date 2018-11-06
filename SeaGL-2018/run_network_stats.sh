@@ -5,7 +5,14 @@
 # rate, network delay, and file size.
 
 
-trap "sudo tc qdisc delete dev $INTERFACE root netem" EXIT ERR
+trap cleanup EXIT ERR INT
+
+function cleanup() {
+  echo "Calling cleanup"
+  sudo tc qdisc delete dev $INTERFACE root netem
+  echo "Cleanup has cleaned up"
+  exit 1
+}
 
 network_em() {
   command=$1	# add, change, remove
@@ -46,6 +53,7 @@ else
 fi
 if [ "X${HOSTNAME}" = "Xjeffs-desktop" ] ; then
 	# Get rid of a local idiosyncrasy of mine that happens to really break the results file
+	alias egrep="egrep"
 	unalias egrep
 	INTERFACE="eno1"
 elif  [ "X${HOSTNAME}" = "Xsmalldell" ] ; then
@@ -63,6 +71,7 @@ fi
 if [ -f $LOG_FILE ]; then
   rm $LOG_FILE
 fi
+date >> $LOG_FILE
 # Have to first add a classless qdisc
 sudo tc qdisc add dev $INTERFACE root netem
 echo "Remote $REMOTE has IPv4 address $REMOTE_4_ADDR and IPv6 address $REMOTE_6_ADDR" | tee -a $LOG_FILE
@@ -70,9 +79,12 @@ echo "Remote $REMOTE has IPv4 address $REMOTE_4_ADDR and IPv6 address $REMOTE_6_
 # index in the echo commands below is last on the line.
 # for size in 1024.data 2048.data 4096.data; do
 # for size in 1024.data 2048.data 4096.data 8192.data 65536.data 131072.data; do
-for size in 1000 10000 100000 1000000; do
-	for loss in  0 0.1 10 20 30.1 50.2 60 70 80; do
-		for delay in  0 10.3 20.0 50 100 200 500; do
+# for size in 1000 10000 100000 1000000; do
+# for size in 1000 10000 100000 1000000; do
+for size in 10000 50000 ; do
+#	for loss in  0 0.1 10 20 30.1 50.2 60 70 80; do
+	for loss in  0 10 80; do
+		for delay in  0 200 500; do
 			# See also https://www.cs.unm.edu/~crandall/netsfall13/TCtutorial.pdf
 			# There is a bug in the tc: it won't accept 0 as a value for loss (see end of this file for details)
 # [jeffs@smalldell ~]$ 
@@ -86,18 +98,34 @@ for size in 1000 10000 100000 1000000; do
 			echo "parameters SIZE=${size} LOSS=${loss} DELAY=${delay} PROTOCOL=IPv4 " >> $LOG_FILE
 			echo " "
 			if ! python3 network_stats.py commercialventvac.com 4000 -4 $size 2>>${LOG_FILE} >> $RESULTS_FILE; then
+				status=$?
 				echo "network_stats.py FAILED!!!!"  >> $LOG_FILE
+				echo "FIXUP last line? ${size} ${loss} ${delay} IPv4 !" >> $RESULTS_FILE
+				if [ $status = 100 ]; then
+					echo "Somebody hit control-C in network_stats.py" | tee -a $LOG_FILE
+					cleanup
+					exit 1
+				fi
 			fi
             echo "parameters SIZE=${size} LOSS=${loss} DELAY=${delay} PROTOCOL=IPv6 " >> $LOG_FILE
 			if ! python3 network_stats.py commercialventvac.com 4000 -6 $size 2>>${LOG_FILE} >> $RESULTS_FILE; then
+				status=$?
 				echo "network_stats.py FAILED!!!!"  >> $LOG_FILE
+				echo "FIXUP last line? ${size} ${loss} ${delay} IPv6 6!" >> $RESULTS_FILE
+				if [ $status = 100 ]; then
+					echo "Somebody hit control-C in network_stats.py" | tee -a $LOG_FILE
+					cleanup
+					exit 1
+				fi
 			fi
-			tail -2 $LOG_FILE
+			tail -6 $LOG_FILE
 		done
 	done
 done
 # Clean up - remove the classless qdisc
+# This is repeated in function cleanup, above
 sudo tc qdisc delete dev $INTERFACE root netem
+date >> $LOG_FILE
 echo "Raw results in file $LOG_FILE .  Scrubbed results in $RESULTS_FILE"
 exit 0
 # Change TCP window size

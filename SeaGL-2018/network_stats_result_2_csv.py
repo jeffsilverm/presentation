@@ -27,9 +27,9 @@ def str_to_time_delta(string) -> datetime.timedelta:
 #
 with open(file=sys.argv[2], mode="w", newline="") as csv_file:
     spamwriter = csv.writer(csv_file)
+    # git tag MONDAY
     spamwriter.writerow(
-        ['Retries:', 'Elapsed_time:', 'Delay (ms)', 'loss_percent', 'size (bytes)', 'data_rate (bytes/sec)',
-         'protocol'])
+        ['retries', 'elapsed', 'delay', 'loss', 'size', 'rate', 'proto'])
     with open(file=sys.argv[1], mode="r") as f:
         for line in f:
             # format of a line is:
