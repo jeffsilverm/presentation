@@ -184,6 +184,8 @@ def report(retry_ctr: int, elapsed: float, delay_: float, loss: float,
            size_bytes: int, rate: float, proto: str) -> None:
     if len(proto) != 1:
         raise ValueError(f"len(proto) should be 1, is actually {len(proto)}")
+    if proto != "4" and proto != "6":
+        raise ValueError(f"proto should be '4' or '6' but is actually {proto}")
     # >>> f"testing {W:10.2f}"
     # 'testing      34.34'
     # >>> E=12354
@@ -299,10 +301,11 @@ if "__main__" == __name__:
         loss_percent: float
         delay, loss_percent = get_delay_loss_percent()
         elapsed_time: float = (end_time - start_time).total_seconds()
+        # protocol_str is either -4 or -6
         report(retry_ctr=c2 - c1, elapsed=elapsed_time, delay_=delay,
                loss=loss_percent,
                size_bytes=size, rate=float(size) / elapsed_time,
-               proto=protocol[-1:])
+               proto=protocol_str[-1:])
     except Exception as e:
         # Hail Mary!
         print("Something went wrong somewhere " + str(e), file=sys.stderr)
@@ -312,5 +315,5 @@ if "__main__" == __name__:
         delay, loss_percent = get_delay_loss_percent()
         report(retry_ctr=1000000000, elapsed=1000000000.0, delay_=delay,
                loss=loss_percent, size_bytes=size,
-               rate=0.0, proto=protocol[-1:])
+               rate=0.0, proto=protocol_str[-1:])
     s.close()
