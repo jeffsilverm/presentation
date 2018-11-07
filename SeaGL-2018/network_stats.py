@@ -337,6 +337,7 @@ if "__main__" == __name__:
                proto=protocol_str[-1:])
     except KeyboardInterrupt as k:
         print("Operator hit Control-C", file=sys.stderr)
+        s.close()
         sys.exit(100)
     except Exception as e:
         # Hail Mary!
