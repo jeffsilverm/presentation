@@ -11,11 +11,20 @@ from typing import Tuple
 
 REPETITIONS = 10
 
+hostname = socket.gethostname()
+if hostname == "jeffs-desktop":
+    INTERFACE = "eno1"
+elif hostname == "smalldell":
+    INTERFACE = "enp0s25"
+else:
+    print(f"{hostname} should be either smalldell or jeffs-desktop")
+    sys.exit(100)
+
 
 def get_delay_loss_percent() -> Tuple[float, float]:
     """Get the delay in the msec and the loss rate as a percent """
     results: subprocess.CompletedProcess = \
-        subprocess.run(["sudo", "tc", "qdisc", "show", "dev", "enp0s25"],
+        subprocess.run(["sudo", "tc", "qdisc", "show", "dev", INTERFACE],
                        stdout=subprocess.PIPE)
     """Output looks like:
     qdisc netem 8013: root refcnt 2 limit 1000 delay 1.0ms loss 10%
@@ -63,7 +72,12 @@ def global_tcp_retries() -> int:
         #     118583 segments retransmitted
         # [jeffs@smalldell ~]$
         if "segments retransmitted" in line:
-            number = line.split()[0]
+            try:
+                number = line.split()[1]
+            except ValueError as v:
+                print(f"In global_tcp_retries: tried to convert {line}"
+                      "to an int and failed. " + str(v), file=sys.stderr)
+                number = "0"
             break
 
     return int(number)
@@ -174,7 +188,7 @@ def count_retries(source_addr: str, source_port: int, destination_addr: str,
     else:
         raise AssertionError(
             f"The connection was not found in the TCP connection table.  " +
-            f"dest_str={dest_str}, source_str={source_str}" +
+            f"dest_str={dest_str}, source_str={source_str}\n" +
             "\n".join(connections))
 
     return count
@@ -186,6 +200,8 @@ def report(retry_ctr: int, elapsed: float, delay_: float, loss: float,
         raise ValueError(f"len(proto) should be 1, is actually {len(proto)}")
     if proto != "4" and proto != "6":
         raise ValueError(f"proto should be '4' or '6' but is actually {proto}")
+    gtrs_end: int = global_tcp_retries()
+    gtrs = gtrs_end - gtrs_start
     # >>> f"testing {W:10.2f}"
     # 'testing      34.34'
     # >>> E=12354
@@ -198,11 +214,12 @@ def report(retry_ctr: int, elapsed: float, delay_: float, loss: float,
     print(f"Retries: {retry_ctr:5d} "
           f"Elapsed time: {elapsed:12.8f} "
           f"Delay: {delay_:6.2f} loss percent: {loss:6.2f} size: {size_bytes:10d} bytes "
-          f"data rate: {rate:14.6e} "
-          f"bytes/sec protocol: IPv{proto}")
+          f"data rate: {rate:11.3e} "
+          f"bytes/sec protocol: IPv{proto} Global TCP retries: {gtrs}")
 
 
 if "__main__" == __name__:
+    gtrs_start: int = global_tcp_retries()
     if len(sys.argv) > 2:
         remote_addr = sys.argv[1]
         remote_port = sys.argv[2]
@@ -232,12 +249,14 @@ if "__main__" == __name__:
     first_attempt = True
     s = None
     name_error = False
+    start_time = datetime.datetime.now()  # This is here as a safety measure.
     try:
         while first_attempt:
             s = socket.socket(family=protocol, type=socket.SOCK_STREAM)
             assert s.family == protocol, "socket.create_connection used the wrong protocol" \
                                          f"Should have been {str(protocol)} was actually {str(s.family)}"
             try:
+                start_time = datetime.datetime.now()
                 s.connect(dest_tuple)
             except ConnectionRefusedError as c:
                 print(f"The socket connect call failed to connect to {dest_tuple}.  "
@@ -293,19 +312,23 @@ if "__main__" == __name__:
             c1: int = count_retries(nom_src_addr, nom_src_port, nom_dst_addr,
                                     nom_dst_port, lcl_protocol=protocol)
         except AssertionError as a:
-            print("Caught AssertionError from count_retries c1=0" + str(a), file=sys.stderr)
+            print("Caught AssertionError from count_retries c1=0\n" + str(a), file=sys.stderr)
             c1 = 0
         assert isinstance(size, int), f"Size should be int, is {type(size)}"
         data = size * b"@"
-        start_time = datetime.datetime.now()
+
+        # THIS IS WHERE WE ACTUALLY SEND THE DATA!!!!!!!!!!!
         s.send(data)
-        end_time = datetime.datetime.now()
+
         try:
             c2: int = count_retries(nom_src_addr, nom_src_port, nom_dst_addr,
                                     nom_dst_port, lcl_protocol=protocol)
         except AssertionError as a:
-            print("Caught AssertionError from count_retries c2=0" + str(a), file=sys.stderr)
+            print("Caught AssertionError from count_retries c2=0\n" + str(a), file=sys.stderr)
             c2 = 0
+        s.close()
+        # Defer gathering the end time until now.  Some of the socket calls do not block
+        end_time = datetime.datetime.now()
         elapsed_time: float = (end_time - start_time).total_seconds()
         # protocol_str is either -4 or -6
         report(retry_ctr=c2 - c1, elapsed=elapsed_time, delay_=delay,
@@ -314,6 +337,7 @@ if "__main__" == __name__:
                proto=protocol_str[-1:])
     except KeyboardInterrupt as k:
         print("Operator hit Control-C", file=sys.stderr)
+        s.close()
         sys.exit(100)
     except Exception as e:
         # Hail Mary!
@@ -325,4 +349,4 @@ if "__main__" == __name__:
         report(retry_ctr=1000000000, elapsed=1000000000.0, delay_=delay,
                loss=loss_percent, size_bytes=size,
                rate=0.0, proto=protocol_str[-1:])
-    s.close()
+        sys.exit(1)
