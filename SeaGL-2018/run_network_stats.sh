@@ -77,14 +77,14 @@ sudo tc qdisc add dev $INTERFACE root netem
 echo "Remote $REMOTE has IPv4 address $REMOTE_4_ADDR and IPv6 address $REMOTE_6_ADDR" | tee -a $LOG_FILE
 # When adding indices, always make sure that the ordering is such that the most rapidly changing
 # index in the echo commands below is last on the line.
-# for size in 1024.data 2048.data 4096.data; do
-# for size in 1024.data 2048.data 4096.data 8192.data 65536.data 131072.data; do
-# for size in 1000 10000 100000 1000000; do
-# for size in 1000 10000 100000 1000000; do
-for size in 10000 50000 ; do
-#	for loss in  0 0.1 10 20 30.1 50.2 60 70 80; do
-	for loss in  0 10 80; do
-		for delay in  0 200 500; do
+# When deciding on sizes, remember that the TCP MTU is 1500 bytes by default, and the sliding
+# window is 64KBytes
+# for size in 1000 10000 100000 ; do	# 3
+for size in 100000 200000 ; do	# 2
+#	for loss in  0 0.1 10 20 30.1 50.2 60 70 80; do		# 9
+	for loss in  0 10 80; do	# 3
+#		for delay in  0 10.1 20.1 50 100 200 500; do	# 7  3*9*7*2=378 runs
+		for delay in  0 100 500; do	# 3  2 * 3 * 3 * 2 = 36 runs
 			# See also https://www.cs.unm.edu/~crandall/netsfall13/TCtutorial.pdf
 			# There is a bug in the tc: it won't accept 0 as a value for loss (see end of this file for details)
 # [jeffs@smalldell ~]$ 
@@ -103,6 +103,7 @@ for size in 10000 50000 ; do
 				echo "FIXUP last line? ${size} ${loss} ${delay} IPv4 !" >> $RESULTS_FILE
 				if [ $status = 100 ]; then
 					echo "Somebody hit control-C in network_stats.py" | tee -a $LOG_FILE
+					date >> $LOG_FILE
 					cleanup
 					exit 1
 				fi
@@ -114,6 +115,7 @@ for size in 10000 50000 ; do
 				echo "FIXUP last line? ${size} ${loss} ${delay} IPv6 6!" >> $RESULTS_FILE
 				if [ $status = 100 ]; then
 					echo "Somebody hit control-C in network_stats.py" | tee -a $LOG_FILE
+					date >> $LOG_FILE
 					cleanup
 					exit 1
 				fi
