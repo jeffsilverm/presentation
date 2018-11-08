@@ -15,7 +15,8 @@ import pandas as pd
 
 print(sys.version)
 
-CSV_FILE = "performance_20181106-0056.csv"
+CSV_FILE = sys.argv[1]
+
 df = pd.read_csv( CSV_FILE )
 df4 = df[df['proto'] == 'IPv4']
 df6 = df[df['proto'] == 'IPv6']
@@ -72,20 +73,32 @@ ax.set_ylabel('Delay (msec)')
 ax.set_zlabel('rate (bytes/sec')
 
 # ax3d = Axes3D(fig=fig)
-x: pd.Series = df4.loss
-xmin: float = df4.loss.min()
-xmax: float = df4.loss.max()
-y: pd.Series = df4.delay
-ymax: float = df4.delay.max()
-ymin: float = df4.delay.min()
+x4: pd.Series = df4.loss
+x4min: float = df4.loss.min()
+x4max: float = df4.loss.max()
+y4: pd.Series = df4.delay
+y4max: float = df4.delay.max()
+y4min: float = df4.delay.min()
 # https://matplotlib.org/api/_as_gen/matplotlib.axes.Axes.set_xlim.html#matplotlib.axes.Axes.set_xlim
 # ax3d.set_xlim3d(left=xmin, right=xmax)  # Loss rate from 0% to 100%
 # ax3d.set_ylim3d(bottom=ymin, top=ymax)
 
 z4: pd.Series = df4.rate
+
+x6: pd.Series = df6.loss
+x6min: float = df6.loss.min()
+x6max: float = df6.loss.max()
+y6: pd.Series = df6.delay
+y6max: float = df6.delay.max()
+y6min: float = df6.delay.min()
+
 z6: pd.Series = df6.rate
-ax.scatter(x, y, z4, c='r', marker='o')  # noqa
-ax.scatter(x, y, z6, c='g', marker='+')  # noqa
+
+ax.scatter(x4, y4, z4, c='r', marker='o', label="IPv4")  # noqa
+
+ax.scatter(x6, y6, z6, c='g', marker='+', label="IPv6")  # noqa
+
+plt.legend()
 
 plt.show()
 

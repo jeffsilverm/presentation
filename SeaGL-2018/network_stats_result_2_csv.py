@@ -29,7 +29,7 @@ with open(file=sys.argv[2], mode="w", newline="") as csv_file:
     spamwriter = csv.writer(csv_file)
     # git tag MONDAY
     spamwriter.writerow(
-        ['retries', 'elapsed', 'delay', 'loss', 'size', 'rate', 'proto'])
+        ['retries', 'elapsed', 'delay', 'loss', 'size', 'rate', 'proto', 'GTRs'])
     with open(file=sys.argv[1], mode="r") as f:
         for line in f:
             # format of a line is:
@@ -55,6 +55,11 @@ with open(file=sys.argv[2], mode="w", newline="") as csv_file:
             # 16    "bytes/sec"
             # 17    "protocol:"
             # 18    a string either IPv4 or IPv6
+            # After the November 5th, added Global TCP Retries (GTRs)
+            # 19:   "Global"
+            # 20:   "TCP"
+            # 21:   "retries:"
+            # 22    GTRs a string as an int
             fields = line.split()
             # I'm converting the strings to data types and then
             # back to strs again because I am doing some sanity checking
@@ -72,6 +77,7 @@ with open(file=sys.argv[2], mode="w", newline="") as csv_file:
             else:
                 raise ValueError("fields[18] should be 'IPv4' or 'IPv6' but is "
                                  f"{fields[18]}")
+            gtrs = int(fields[22])
             row_str = [str(retries), str(elapsed_time), str(delay_ms),
-                       str(loss_percent), str(size), str(data_rate), protocol]
+                       str(loss_percent), str(size), str(data_rate), protocol, gtrs]
             spamwriter.writerow(row_str)
