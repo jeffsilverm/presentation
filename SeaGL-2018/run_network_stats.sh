@@ -80,11 +80,11 @@ echo "Remote $REMOTE has IPv4 address $REMOTE_4_ADDR and IPv6 address $REMOTE_6_
 # When deciding on sizes, remember that the TCP MTU is 1500 bytes by default, and the sliding
 # window is 64KBytes
 # for size in 1000 10000 100000 ; do	# 3
-for size in 100000 200000 ; do	# 2
+for size in 200000 500000 1000000 2000000 5000000 ; do	# 5
 #	for loss in  0 0.1 10 20 30.1 50.2 60 70 80; do		# 9
-	for loss in  0 10 80; do	# 3
+	for loss in  0 0.01 0.1 0.2 0.5 1.0; do	# 6
 #		for delay in  0 10.1 20.1 50 100 200 500; do	# 7  3*9*7*2=378 runs
-		for delay in  0 100 500; do	# 3  2 * 3 * 3 * 2 = 36 runs
+		for delay in  0 100 500 1000; do	# 4  5*6*4*2 = 240 runs
 			# See also https://www.cs.unm.edu/~crandall/netsfall13/TCtutorial.pdf
 			# There is a bug in the tc: it won't accept 0 as a value for loss (see end of this file for details)
 # [jeffs@smalldell ~]$ 
